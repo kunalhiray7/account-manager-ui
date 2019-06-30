@@ -3,6 +3,7 @@ import {shallow} from 'enzyme';
 import TextField from "@material-ui/core/TextField";
 import Button from '@material-ui/core/Button';
 import {Login} from "../login";
+import {paths} from "../../common/constants";
 
 describe("Login", () => {
     let wrapper;
@@ -37,5 +38,18 @@ describe("Login", () => {
         button.simulate("click", {preventDefault: jest.fn()});
 
         expect(onLogin).toHaveBeenCalledWith(username);
+    });
+
+    it("should render the register button", function () {
+        const registerBtn = wrapper.find("#register");
+
+        expect(registerBtn.type()).toEqual(Button);
+        expect(registerBtn.childAt(0).text()).toEqual("Register")
+    });
+
+    it("should render ling for registration", function () {
+        const link = wrapper.find('Link');
+
+        expect(link.prop("to")).toEqual(paths.REGISTRATION);
     });
 });
