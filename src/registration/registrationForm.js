@@ -89,15 +89,21 @@ export class RegistrationForm extends React.Component {
                     className={classes.formItem}
                 />
 
-                <TextField
-                    id="profilePic"
-                    label="Profile Picture"
-                    placeholder="Profile Picture"
-                    margin="normal"
-                    name="profilePic"
-                    type="file"
-                    className={classes.formItem}
-                />
+                <FormControl id="profilePic" className={classes.formItem}>
+                    <FormLabel component="legend">Profile Picture</FormLabel>
+                    <input
+                        accept="image/*"
+                        className={classes.input}
+                        style={{display: 'none'}}
+                        id="raised-button-file"
+                        type="file"
+                    />
+                    <label htmlFor="raised-button-file">
+                        <Button variant="raised" color="secondary" component="span">
+                            Upload
+                        </Button>
+                    </label>
+                </FormControl>
 
                 <TextField
                     id="dob"
@@ -197,6 +203,7 @@ const styles = theme => ({
     formItem: {
         marginLeft: theme.spacing.unit,
         marginRight: theme.spacing.unit,
+        marginBottom: theme.spacing.unit * 4,
         width: '90%',
     },
     paper: {

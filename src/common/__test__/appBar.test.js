@@ -19,7 +19,7 @@ describe("App Banner", () => {
         const banner = appBanner.childAt(0).childAt(0);
 
         expect(appBanner.type()).toEqual(AppBar);
-        expect(banner.childAt(0).text()).toEqual("CoffeeWithMe");
+        expect(banner.type()).toEqual('img');
     });
 
     it("should render the logout link if showLogout is true", function () {

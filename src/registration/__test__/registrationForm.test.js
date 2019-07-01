@@ -9,6 +9,7 @@ import Select from "@material-ui/core/Select";
 import Button from "@material-ui/core/Button";
 
 import {RegistrationForm} from "../registrationForm";
+import FormControl from "@material-ui/core/FormControl";
 
 describe("Registration Form", () => {
     let wrapper;
@@ -233,11 +234,17 @@ describe("Registration Form", () => {
 
     it("should render the file uploader for profile pic", function () {
         const field = wrapper.find("#profilePic");
+        const label = field.childAt(0);
+        expect(label.childAt(0).text()).toEqual("Profile Picture");
 
-        expect(field.type()).toEqual(TextField);
-        expect(field.prop("type")).toEqual("file");
-        expect(field.prop("placeholder")).toEqual("Profile Picture");
-        expect(field.prop("label")).toEqual("Profile Picture");
+        const input = field.childAt(1);
+        expect(input.type()).toEqual("input");
+        expect(input.prop("accept")).toEqual("image/*");
+        expect(input.prop("type")).toEqual("file");
+
+        const button = field.childAt(2).childAt(0);
+        expect(button.type()).toEqual(Button);
+        expect(button.childAt(0).text()).toEqual("Upload");
     });
 
     it("should render the date picker for date of birth", function () {
