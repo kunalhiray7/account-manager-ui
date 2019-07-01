@@ -9,6 +9,7 @@
     "axios": "^0.19.0",
     "classnames": "latest",
     "gh-pages": "^2.0.1",
+    "material-ui-form": "^1.0.0-alpha.26",
     "prop-types": "latest",
     "react": "^16.8.4",
     "react-dom": "^16.8.4",

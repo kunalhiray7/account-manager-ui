@@ -126,4 +126,50 @@ describe("Registration Actions", () => {
         const expected = [{payload: "Request failed with status code 500", type: actions.ACTIONS.ERROR_OCCURRED}];
         expect(store.getActions()).toEqual(expect.arrayContaining(expected));
     });
+
+    it('should dispatch correct actions when user is registered', async () => {
+        // given
+        const user = {
+            realName: "John Smith",
+            displayName: "John",
+            maritalStatus: "Unmarried"
+        };
+
+        httpMock.onPost(
+            `${config.serverUrl}/users`
+        ).reply(201, user);
+
+        // when
+        store.dispatch(actions.registerUser(user));
+        await flushAllPromises();
+
+        // then
+        const expected = [{payload: user, type: actions.ACTIONS.USER_SAVED}];
+        expect(store.getActions()).toEqual(expect.arrayContaining(expected));
+    });
+
+    it('should dispatch correct actions when error occurred while registering user', async () => {
+        // given
+        const user = {
+            realName: "John Smith",
+            displayName: "John",
+            maritalStatus: "Unmarried"
+        };
+        const error = {
+            "message": "error",
+            "code": 500
+        };
+
+        httpMock.onPost(
+            `${config.serverUrl}/users`
+        ).reply(500, error);
+
+        // when
+        store.dispatch(actions.registerUser(user));
+        await flushAllPromises();
+
+        // then
+        const expected = [{payload: "Request failed with status code 500", type: actions.ACTIONS.ERROR_OCCURRED}];
+        expect(store.getActions()).toEqual(expect.arrayContaining(expected));
+    });
 });

@@ -4,7 +4,8 @@ export const DEFAULT_STATE = {
     singleChoiceAttributes: {},
     cities: {},
     isLoading: false,
-    error: undefined
+    error: undefined,
+    user: undefined
 };
 
 const registrationReducer = (state = DEFAULT_STATE, action) => {
@@ -28,6 +29,11 @@ const registrationReducer = (state = DEFAULT_STATE, action) => {
             return {
                 ...state,
                 error: action.payload
+            };
+        case ACTIONS.USER_SAVED:
+            return {
+                ...state,
+                user: action.payload
             };
 
         default:

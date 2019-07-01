@@ -16,3 +16,14 @@ export const get = ({ path, responseType, headers } = {}) => {
             return Promise.reject(error);
         });
 };
+
+export const post = ({ path, payload, headers } = {}) => {
+    return http.post(path, payload)
+        .then(response => {
+            const responseData = { ...response.data, headers: response.headers };
+            return Promise.resolve(responseData);
+        })
+        .catch(error => {
+            return Promise.reject(error);
+        });
+};

@@ -72,6 +72,19 @@ describe("Registration Reducer", () => {
         expect(updatedState.error).toEqual("Error");
     });
 
+    it('should return state with user when USER_SAVED action is reduced', function () {
+        const user = {
+            realName: "John Smith",
+            displayName: "John",
+            maritalStatus: "Unmarried"
+        };
+        const action = {type: ACTIONS.USER_SAVED, payload: user};
+
+        const updatedState = reducer(undefined, action);
+
+        expect(updatedState.user).toEqual(user);
+    });
+
     it("should return default state when the action type is not matched", () => {
         const action = {type: "UNKNOWN", payload: {}};
 

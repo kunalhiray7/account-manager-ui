@@ -1,10 +1,11 @@
-import {get} from "../api/http";
+import {get, post} from "../api/http";
 
 export const ACTIONS = {
     SINGLE_CHOICE_ATTR_FETCHED: 'SINGLE_CHOICE_ATTR_FETCHED',
     CITIES_FETCHED: 'CITIES_FETCHED',
     LOADING: 'LOADING',
     ERROR_OCCURRED: 'ERROR_OCCURRED',
+    USER_SAVED: 'USER_SAVED',
 };
 
 function loading(isLoading) {
@@ -59,6 +60,28 @@ export function fetchCities() {
             path: `/en/locations/cities.json`
         }).then(response => {
             dispatch(citiesFetched(response));
+            dispatch(loading(false));
+        }, (error) => {
+            dispatch(loading(false));
+            dispatch(errorOccurred(error.message));
+        });
+    }
+}
+
+function userRegistered(user) {
+    return {
+        type: ACTIONS.USER_SAVED,
+        payload: user
+    }
+}
+
+export function registerUser(userRequest) {
+    return dispatch => {
+        post({
+            path: `/users`,
+            payload: userRequest
+        }).then(response => {
+            dispatch(userRegistered(response));
             dispatch(loading(false));
         }, (error) => {
             dispatch(loading(false));
