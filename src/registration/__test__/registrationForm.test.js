@@ -9,7 +9,6 @@ import Select from "@material-ui/core/Select";
 import Button from "@material-ui/core/Button";
 
 import {RegistrationForm} from "../registrationForm";
-import FormControl from "@material-ui/core/FormControl";
 
 describe("Registration Form", () => {
     let wrapper;
@@ -248,7 +247,7 @@ describe("Registration Form", () => {
     });
 
     it("should render the date picker for date of birth", function () {
-        const field = wrapper.find("#dob");
+        const field = wrapper.find("#dateOfBirth");
 
         expect(field.type()).toEqual(TextField);
         expect(field.prop("type")).toEqual("date");
@@ -310,7 +309,7 @@ describe("Registration Form", () => {
 
         expect(field.type()).toEqual(TextField);
         expect(field.prop("type")).toEqual("number");
-        expect(field.prop("label")).toEqual("Height");
+        expect(field.prop("label")).toEqual("Height in centimeters");
     });
 
     it("should render a single choice field for figure", function () {
@@ -392,5 +391,29 @@ describe("Registration Form", () => {
         wrapper.instance().onSubmit(values);
 
         expect(registerUser).toHaveBeenCalledWith(values);
+    });
+
+    it("should render an autocomplete field for location", function () {
+        const options = cities.cities.map(city => ({value: city, label: city.city}));
+        const field = wrapper.find("#location");
+
+        const label = field.childAt(0);
+        expect(label.childAt(0).text()).toEqual("Location");
+
+        const autocompleteSelect = field.childAt(1);
+        expect(autocompleteSelect.prop("options")).toEqual(options);
+        expect(autocompleteSelect.prop("name")).toEqual("location");
+        expect(autocompleteSelect.prop("onChange")).toEqual(wrapper.instance().onLocationChange);
+    });
+
+    it("should set the selected location in state when location is changed", function () {
+        const field = wrapper.find("#location");
+        const autocompleteSelect = field.childAt(1);
+
+        let location = {value: cities.cities[0], label: cities.cities[0].city};
+        autocompleteSelect.simulate("change", location);
+        wrapper.update();
+
+        expect(wrapper.state().location).toEqual(location.value);
     });
 });

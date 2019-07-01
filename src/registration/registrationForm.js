@@ -16,17 +16,29 @@ import InputLabel from "@material-ui/core/InputLabel";
 import Select from "@material-ui/core/Select";
 import Input from "@material-ui/core/Input";
 import MenuItem from "@material-ui/core/MenuItem";
+import AutoCompleteField from "../common/autocompleteFormField";
 
 export class RegistrationForm extends React.Component {
+
+    state = {
+        location: undefined
+    };
 
     componentDidMount() {
         this.props.fetchSingleChoiceAttributes();
         this.props.fetchCities();
     }
 
-    onSubmit = (values, pristineValues) => {
-        console.log(values, pristineValues);
+    onSubmit = (values) => {
+        console.log(values);
+        values.location = this.state.location;
         this.props.registerUser(values);
+    };
+
+    onLocationChange = (selectedLocation) => {
+        this.setState({
+            location: selectedLocation && selectedLocation.value
+        });
     };
 
     getSingleSelectionField = (formItemClass, fieldDisplayName, fieldName, values, isRequired) => <FormControl
@@ -46,8 +58,25 @@ export class RegistrationForm extends React.Component {
         </Select>
     </FormControl>;
 
+    getTextField = (formItemClass, fieldDisplayName, fieldName, type, isRequired, isMultiline, inputLabelProps) =>
+        <TextField
+            id={fieldName}
+            label={fieldDisplayName}
+            placeholder={fieldDisplayName}
+            margin="normal"
+            required={isRequired}
+            name={fieldName}
+            type={type}
+            value=""
+            className={formItemClass}
+            InputLabelProps={inputLabelProps}
+            multiline={isMultiline}
+            rows={isMultiline && 3}
+        />;
+
     render() {
         const {classes} = this.props;
+        const cities = this.props.cities.cities.map(city => ({value: city, label: city.city}));
 
         return <div>
             <AppBanner/>
@@ -55,42 +84,15 @@ export class RegistrationForm extends React.Component {
                 <Typography id="formName" className={classes.formName} component="h2" variant="h5">
                     User Registration
                 </Typography>
-                <TextField
-                    id="email"
-                    label="Email"
-                    placeholder="Email"
-                    margin="normal"
-                    required={true}
-                    name="email"
-                    type="email"
-                    value=""
-                    className={classes.formItem}
-                />
 
-                <TextField
-                    id="realName"
-                    label="Full Name"
-                    placeholder="Full Name"
-                    margin="normal"
-                    required={true}
-                    name="realName"
-                    value=""
-                    className={classes.formItem}
-                />
+                {this.getTextField(classes.formItem, "Email", "email", "email", true)}
 
-                <TextField
-                    id="displayName"
-                    label="Display Name"
-                    placeholder="Display Name"
-                    margin="normal"
-                    required={true}
-                    name="displayName"
-                    value=""
-                    className={classes.formItem}
-                />
+                {this.getTextField(classes.formItem, "Full Name", "realName", undefined, true)}
+
+                {this.getTextField(classes.formItem, "Display Name", "displayName", undefined, true)}
 
                 <FormControl id="profilePic" className={classes.formItem}>
-                    <FormLabel component="legend">Profile Picture</FormLabel>
+                    <FormLabel className={classes.formLabel} component="legend">Profile Picture</FormLabel>
                     <input
                         accept="image/*"
                         className={classes.input}
@@ -99,24 +101,13 @@ export class RegistrationForm extends React.Component {
                         type="file"
                     />
                     <label htmlFor="raised-button-file">
-                        <Button variant="raised" color="secondary" component="span">
+                        <Button variant="contained" color="secondary" component="span">
                             Upload
                         </Button>
                     </label>
                 </FormControl>
 
-                <TextField
-                    id="dob"
-                    label="Date of birth"
-                    type="date"
-                    className={classes.formItem}
-                    InputLabelProps={{
-                        shrink: true,
-                    }}
-                    required={true}
-                    name="dateOfBirth"
-                    value=""
-                />
+                {this.getTextField(classes.formItem, "Date of birth", "dateOfBirth", "date", true, undefined, {shrink: true})}
 
                 <FormControl required={true} className={classes.formItem}>
                     <FormLabel component="legend">Gender</FormLabel>
@@ -137,44 +128,20 @@ export class RegistrationForm extends React.Component {
 
                 {this.getSingleSelectionField(classes.formItem, "Religion", "religion", this.props.singleChoiceAttributes.religion)}
 
-                <TextField
-                    id="height"
-                    label="Height"
-                    type="number"
-                    className={classes.formItem}
-                    name="height"
-                    value=""
-                    placeholder="Height in centimeters"
-                    margin="normal"
-                />
+                {this.getTextField(classes.formItem, "Height in centimeters", "height", "number")}
 
                 {this.getSingleSelectionField(classes.formItem, "Figure", "figure", this.props.singleChoiceAttributes.figure)}
 
                 {this.getSingleSelectionField(classes.formItem, "Marital Status", "maritalStatus", this.props.singleChoiceAttributes.marital_status, true)}
 
-                <TextField
-                    id="occupation"
-                    label="Occupation"
-                    className={classes.formItem}
-                    name="occupation"
-                    value=""
-                    placeholder="Occupation"
-                    margin="normal"
-                    multiline={true}
-                    rows={3}
-                />
+                {this.getTextField(classes.formItem, "Occupation", "occupation", undefined, undefined, true)}
 
-                <TextField
-                    id="aboutMe"
-                    label="About Me"
-                    className={classes.formItem}
-                    name="aboutMe"
-                    value=""
-                    placeholder="About Me"
-                    margin="normal"
-                    multiline={true}
-                    rows={3}
-                />
+                {this.getTextField(classes.formItem, "About Me", "aboutMe", undefined, undefined, true)}
+
+                <FormControl id="location" required={true} className={classes.formItem}>
+                    <FormLabel className={classes.formLabel} component="legend">Location</FormLabel>
+                    <AutoCompleteField name="location" options={cities} onChange={this.onLocationChange}/>
+                </FormControl>
 
                 <div className={classes.buttonGroup}>
                     <Button id="reset" variant="contained" color="secondary" type="reset">Reset</Button>
@@ -224,6 +191,9 @@ const styles = theme => ({
         display: 'flex',
         flexDirection: 'row',
         justifyContent: 'space-between'
+    },
+    formLabel: {
+        marginBottom: theme.spacing.unit * 2,
     }
 });
 
