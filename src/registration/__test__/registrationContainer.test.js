@@ -170,12 +170,14 @@ describe("Registration Container", () => {
     let wrapper;
     const mockStore = configureStore([thunk]);
 
+    const user = {id: "56789ibnm"};
     const store = mockStore({
         registration: {
             cities: cities,
             singleChoiceAttributes: singleChoiceAttributes,
             isLoading: true,
-            error: "Error"
+            error: "Error",
+            user: user
         }
     });
 
@@ -193,6 +195,7 @@ describe("Registration Container", () => {
         expect(connectedComponent.prop("cities")).toEqual(cities);
         expect(connectedComponent.prop("isLoading")).toEqual(true);
         expect(connectedComponent.prop("error")).toEqual("Error");
+        expect(connectedComponent.prop("user")).toEqual(user);
     });
 
 });

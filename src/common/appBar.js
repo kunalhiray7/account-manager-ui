@@ -2,7 +2,8 @@ import React from 'react';
 import {withStyles} from "@material-ui/core";
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
-import Button from '@material-ui/core/Button';
+import LogoutIcon from '@material-ui/icons/PowerSettingsNew';
+
 import withRoot from "./withRoot";
 import {paths} from "./constants";
 import {Link} from "react-router-dom";
@@ -16,11 +17,13 @@ export function AppBanner(props) {
         <div className={classes.root}>
             <AppBar id="appBanner" position="static">
                 <Toolbar>
-                    <img src={banner} alt={banner}/>
+                    <div className={classes.toolbar}>
+                    <img height={80} src={banner} alt={banner}/>
                     {props.showLogout &&
                     <Link id="logout" to={paths.LOGIN}>
-                        <Button color="inherit">Logout</Button>
+                        <LogoutIcon className={classes.logout}/>
                     </Link>}
+                    </div>
                 </Toolbar>
             </AppBar>
         </div>
@@ -37,6 +40,17 @@ const styles = theme => ({
     title: {
         flexGrow: 1,
     },
+    toolbar: {
+        width: "100%",
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "space-between",
+    },
+    logout: {
+        fontSize: "26px",
+        margin: "20px",
+        color: "white",
+    }
 });
 
 export default withRoot(withStyles(styles)(AppBanner));

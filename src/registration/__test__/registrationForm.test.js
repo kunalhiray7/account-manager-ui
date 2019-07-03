@@ -15,6 +15,7 @@ describe("Registration Form", () => {
     const fetchSingleChoiceAttributes = jest.fn();
     const fetchCities = jest.fn();
     const registerUser = jest.fn();
+    const history = {push: jest.fn()};
 
     const attr = {
         "gender": [
@@ -188,6 +189,7 @@ describe("Registration Form", () => {
                                             singleChoiceAttributes={attr}
                                             cities={cities}
                                             registerUser={registerUser}
+                                            history={history}
         />);
     });
 
@@ -415,5 +417,14 @@ describe("Registration Form", () => {
         wrapper.update();
 
         expect(wrapper.state().location).toEqual(location.value);
+    });
+
+    it("should navigate to profile page when new user is registered", function () {
+        let newUser = {id: "12345ertyghbn", realName: "John Smith"};
+
+        wrapper.setProps({user: newUser});
+        wrapper.update();
+
+        expect(history.push).toHaveBeenCalledWith(`/profile/${newUser.id}`);
     });
 });

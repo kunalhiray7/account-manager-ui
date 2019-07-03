@@ -10,6 +10,7 @@ const mapStateToProps = state => {
         cities: state.registration.cities,
         isLoading: state.registration.isLoading,
         error: state.registration.error,
+        user: state.registration.user,
     }
 };
 const mapDispatchToProps = dispatch => bindActionCreators(actions, dispatch);

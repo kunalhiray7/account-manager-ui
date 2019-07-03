@@ -16,6 +16,8 @@ import InputLabel from "@material-ui/core/InputLabel";
 import Select from "@material-ui/core/Select";
 import Input from "@material-ui/core/Input";
 import MenuItem from "@material-ui/core/MenuItem";
+import {pathOr} from "ramda";
+
 import AutoCompleteField from "../common/autocompleteFormField";
 
 export class RegistrationForm extends React.Component {
@@ -29,8 +31,15 @@ export class RegistrationForm extends React.Component {
         this.props.fetchCities();
     }
 
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        const prevUserId = pathOr(undefined, ["user", "id"], prevProps);
+        const userId = pathOr(undefined, ["user", "id"], this.props);
+        if(userId !== prevUserId) {
+            this.props.history.push(`/profile/${userId}`);
+        }
+    }
+
     onSubmit = (values) => {
-        console.log(values);
         values.location = this.state.location;
         this.props.registerUser(values);
     };

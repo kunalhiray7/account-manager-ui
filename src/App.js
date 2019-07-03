@@ -4,7 +4,7 @@ import {Provider} from "react-redux";
 
 import configureStore from "./store";
 import {paths} from "./common/constants";
-import Profile from "./profile/profile";
+import ProfileContainer from "./profile/profileContainer";
 import Login from "./login/login";
 import RegistrationContainer from "./registration/registrationContainer";
 
@@ -17,7 +17,7 @@ class App extends Component {
                 <BrowserRouter>
                     <Switch>
                         <Route exact path={paths.LOGIN} component={Login}/>
-                        <Route exact path={paths.PROFILE} component={Profile}/>
+                        <Route exact path={paths.PROFILE} component={ProfileContainer}/>
                         <Route exact path={paths.REGISTRATION} component={RegistrationContainer}/>
                     </Switch>
                 </BrowserRouter>

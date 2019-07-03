@@ -16,7 +16,7 @@ describe("App Banner", () => {
 
     it("should render the app banner with title", function () {
         const appBanner = wrapper.find("#appBanner");
-        const banner = appBanner.childAt(0).childAt(0);
+        const banner = appBanner.childAt(0).childAt(0).childAt(0);
 
         expect(appBanner.type()).toEqual(AppBar);
         expect(banner.type()).toEqual('img');
