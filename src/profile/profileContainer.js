@@ -8,6 +8,8 @@ const mapStateToProps = (state, ownParams) => {
     return {
         user: state.registration.user,
         userId: ownParams.match.params.userId,
+        singleChoiceAttributes: state.registration.singleChoiceAttributes,
+        cities: state.registration.cities,
     }
 };
 const mapDispatchToProps = dispatch => bindActionCreators(actions, dispatch);
