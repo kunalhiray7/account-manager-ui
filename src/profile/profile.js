@@ -113,7 +113,6 @@ export class Profile extends React.Component {
     </div>;
 
     onFieldChange = (event, fieldName) => {
-        console.log(event.target.value);
         this.setState({
             updatedValue: event.target.value,
             updatedField: fieldName

@@ -46,7 +46,6 @@ describe("Profile Container", () => {
     });
 
     it("should pass the correct properties from store to connected component", function () {
-        console.log("WRAPPER::", wrapper.debug());
 
         expect(wrapper.prop("match")).toEqual(params);
     });

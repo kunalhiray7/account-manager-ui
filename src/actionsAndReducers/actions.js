@@ -6,6 +6,7 @@ export const ACTIONS = {
     LOADING: 'LOADING',
     ERROR_OCCURRED: 'ERROR_OCCURRED',
     USER_SAVED: 'USER_SAVED',
+    PROFILE_FETCHED: 'PROFILE_FETCHED',
 };
 
 function loading(isLoading) {
@@ -89,3 +90,27 @@ export function registerUser(userRequest) {
         });
     }
 }
+
+function profileFetched(profile) {
+    return {
+        type: ACTIONS.PROFILE_FETCHED,
+        payload: profile
+    }
+}
+
+export function fetchUserProfile(userId) {
+    return dispatch => {
+        dispatch(loading(true));
+
+        get({
+            path: `/user/${userId}`
+        }).then(response => {
+            dispatch(profileFetched(response));
+            dispatch(loading(false));
+        }, (error) => {
+            dispatch(loading(false));
+            dispatch(errorOccurred(error.message));
+        });
+    }
+}
+

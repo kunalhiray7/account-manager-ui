@@ -35,6 +35,11 @@ const registrationReducer = (state = DEFAULT_STATE, action) => {
                 ...state,
                 user: action.payload
             };
+        case ACTIONS.PROFILE_FETCHED:
+            return {
+                ...state,
+                user: action.payload
+            };
 
         default:
             return {

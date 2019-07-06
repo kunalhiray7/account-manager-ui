@@ -1,13 +1,13 @@
 import { applyMiddleware, combineReducers, createStore } from 'redux';
 import thunk from 'redux-thunk';
 
-import registrationReducer from './registration/reducer';
+import reducer from './actionsAndReducers/reducer';
 
 
 export default function configureStore() {
 
     const appReducer = combineReducers({
-        registration: registrationReducer,
+        registration: reducer,
     });
 
     const rootReducer = (state, action) => {

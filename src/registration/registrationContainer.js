@@ -1,7 +1,7 @@
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 
-import * as actions from './actions';
+import * as actions from '../actionsAndReducers/actions';
 import RegistrationForm from './registrationForm';
 
 const mapStateToProps = state => {
