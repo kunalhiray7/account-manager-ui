@@ -27,3 +27,13 @@ export const post = ({ path, payload, headers } = {}) => {
             return Promise.reject(error);
         });
 };
+
+export const put = ({ path, payload, headers } = {}) => {
+    return http.put(path, payload)
+        .then(response => {
+            return Promise.resolve(response.data)
+        })
+        .catch(error => {
+            return Promise.reject(error);
+        });
+};

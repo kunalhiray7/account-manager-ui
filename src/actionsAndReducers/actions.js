@@ -1,4 +1,4 @@
-import {get, post} from "../api/http";
+import {get, post, put} from "../api/http";
 
 export const ACTIONS = {
     SINGLE_CHOICE_ATTR_FETCHED: 'SINGLE_CHOICE_ATTR_FETCHED',
@@ -106,6 +106,22 @@ export function fetchUserProfile(userId) {
             path: `/user/${userId}`
         }).then(response => {
             dispatch(profileFetched(response));
+            dispatch(loading(false));
+        }, (error) => {
+            dispatch(loading(false));
+            dispatch(errorOccurred(error.message));
+        });
+    }
+}
+
+export function authenticate(username, history) {
+    return dispatch => {
+        put({
+            path: `/authentications`,
+            payload: {username: username}
+        }).then(response => {
+            dispatch(profileFetched(response));
+            history.push(`/profile/${response.id}`);
             dispatch(loading(false));
         }, (error) => {
             dispatch(loading(false));

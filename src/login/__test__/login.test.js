@@ -8,10 +8,11 @@ import {paths} from "../../common/constants";
 describe("Login", () => {
     let wrapper;
     const classes = {root: "root"};
-    const onLogin = jest.fn();
+    const authenticate = jest.fn();
+    const history = {push: jest.fn()};
 
     beforeEach(function () {
-        wrapper = shallow(<Login classes={classes} onLogin={onLogin}/>);
+        wrapper = shallow(<Login classes={classes} authenticate={authenticate} history={history}/>);
     });
 
     it("should render the TextField for username", function () {
@@ -37,7 +38,7 @@ describe("Login", () => {
         const button = wrapper.find("#login");
         button.simulate("click", {preventDefault: jest.fn()});
 
-        expect(onLogin).toHaveBeenCalledWith(username);
+        expect(authenticate).toHaveBeenCalledWith(username, history);
     });
 
     it("should render the register button", function () {

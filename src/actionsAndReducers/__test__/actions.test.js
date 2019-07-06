@@ -231,4 +231,55 @@ describe("Registration Actions", () => {
         const expected = [{payload: "Request failed with status code 500", type: actions.ACTIONS.ERROR_OCCURRED}];
         expect(store.getActions()).toEqual(expect.arrayContaining(expected));
     });
+
+    it('should dispatch correct actions user is authenticated', async () => {
+        // given
+        const history = {push: jest.fn()};
+        const request = {
+            username: "john.smith@gmail.com"
+        };
+        const id = "6789yuibn";
+        const profile = {
+            id: id,
+            realName: "John Smith"
+        };
+
+        httpMock.onPut(
+            `${config.serverUrl}/authentications`
+        ).reply(200, profile);
+
+        // when
+        store.dispatch(actions.authenticate(request, history));
+        await flushAllPromises();
+
+        // then
+        const expected = [{payload: profile, type: actions.ACTIONS.PROFILE_FETCHED}];
+        expect(store.getActions()).toEqual(expect.arrayContaining(expected));
+        expect(history.push).toHaveBeenCalledWith(`/profile/${id}`)
+    });
+
+    it('should dispatch correct actions when error occurred while authenticating user', async () => {
+        // given
+        const request = {
+            username: "john.smith@gmail.com"
+        };
+        const history = {push: jest.fn()};
+        const error = {
+            "message": "error",
+            "code": 500
+        };
+
+        httpMock.onPut(
+            `${config.serverUrl}/authentications`
+        ).reply(500, error);
+
+        // when
+        store.dispatch(actions.authenticate(request, history));
+        await flushAllPromises();
+
+        // then
+        const expected = [{payload: "Request failed with status code 500", type: actions.ACTIONS.ERROR_OCCURRED}];
+        expect(store.getActions()).toEqual(expect.arrayContaining(expected));
+        expect(history.push).not.toHaveBeenCalled();
+    });
 });
