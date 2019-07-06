@@ -84,8 +84,14 @@ export class RegistrationForm extends React.Component {
         />;
 
     render() {
-        const {classes} = this.props;
-        const cities = this.props.cities.cities.map(city => ({value: city, label: city.city}));
+        const {classes, cities, singleChoiceAttributes} = this.props;
+        const citiesFromProps = pathOr([], ["cities"], cities);
+        const citiesOptions = citiesFromProps.map(city => ({value: city, label: city.city}));
+        const genderOptions = pathOr([], ["gender"], singleChoiceAttributes);
+        const ethnicityOptions = pathOr([], ["ethnicity"], singleChoiceAttributes);
+        const religionOptions = pathOr([], ["religion"], singleChoiceAttributes);
+        const figureOptions = pathOr([], ["figure"], singleChoiceAttributes);
+        const maritalStatusOptions = pathOr([], ["marital_status"], singleChoiceAttributes);
 
         return <div>
             <AppBanner/>
@@ -124,24 +130,24 @@ export class RegistrationForm extends React.Component {
                         aria-label="Gender"
                         name="gender"
                         id="gender"
-                        value={this.props.singleChoiceAttributes.gender[0].name}
+                        value={genderOptions.length > 1 && genderOptions[0].name}
                     >
-                        {this.props.singleChoiceAttributes.gender.map(gender => <FormControlLabel key={gender.id}
+                        {genderOptions.map(gender => <FormControlLabel key={gender.id}
                                                                                                   value={gender.name}
                                                                                                   control={<Radio/>}
                                                                                                   label={gender.name.toUpperCase()}/>)}
                     </RadioGroup>
                 </FormControl>
 
-                {this.getSingleSelectionField(classes.formItem, "Ethnicity", "ethnicity", this.props.singleChoiceAttributes.ethnicity)}
+                {this.getSingleSelectionField(classes.formItem, "Ethnicity", "ethnicity", ethnicityOptions)}
 
-                {this.getSingleSelectionField(classes.formItem, "Religion", "religion", this.props.singleChoiceAttributes.religion)}
+                {this.getSingleSelectionField(classes.formItem, "Religion", "religion", religionOptions)}
 
                 {this.getTextField(classes.formItem, "Height in centimeters", "height", "number")}
 
-                {this.getSingleSelectionField(classes.formItem, "Figure", "figure", this.props.singleChoiceAttributes.figure)}
+                {this.getSingleSelectionField(classes.formItem, "Figure", "figure", figureOptions)}
 
-                {this.getSingleSelectionField(classes.formItem, "Marital Status", "maritalStatus", this.props.singleChoiceAttributes.marital_status, true)}
+                {this.getSingleSelectionField(classes.formItem, "Marital Status", "maritalStatus", maritalStatusOptions, true)}
 
                 {this.getTextField(classes.formItem, "Occupation", "occupation", undefined, undefined, true)}
 
@@ -149,7 +155,7 @@ export class RegistrationForm extends React.Component {
 
                 <FormControl id="location" required={true} className={classes.formItem}>
                     <FormLabel className={classes.formLabel} component="legend">Location</FormLabel>
-                    <AutoCompleteField name="location" options={cities} onChange={this.onLocationChange}/>
+                    <AutoCompleteField name="location" options={citiesOptions} onChange={this.onLocationChange}/>
                 </FormControl>
 
                 <div className={classes.buttonGroup}>
