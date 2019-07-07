@@ -124,7 +124,7 @@ export class RegistrationForm extends React.Component {
                     <label htmlFor="raised-button-file">
                         <Button variant="contained" color="secondary" component="span">
                             Upload
-                        </Button>
+                        </Button> max 10MB
                     </label>
                 </FormControl>
 
