@@ -179,17 +179,17 @@ export function updateField(id, field, value) {
 }
 
 function getPatchRequest(field, value) {
-    if(field === "location") {
+    if(field === "city") {
         return [
             {
                 "op": "replace",
                 "path": "/location",
-                "value": [parseFloat(value.lat), parseFloat(value.lon)]
+                "value": [parseFloat(value.value.lat), parseFloat(value.value.lon)]
             },
             {
                 "op": "replace",
                 "path": "/city",
-                "value": `${value.city}`
+                "value": `${value.value.city}`
             }
         ]
     } else {
