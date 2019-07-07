@@ -123,4 +123,13 @@ describe("Registration Reducer", () => {
         expect(updatedState.user).toEqual(user);
     });
 
+    it('should return state with image url when IMAGE_UPLOADED action is reduced', function () {
+        let imageUrl = "http://123.png";
+        const action = {type: ACTIONS.IMAGE_UPLOADED, payload: imageUrl};
+
+        const updatedState = reducer(undefined, action);
+
+        expect(updatedState.imageUrl).toEqual(imageUrl);
+    });
+
 });

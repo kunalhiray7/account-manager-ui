@@ -171,13 +171,15 @@ describe("Registration Container", () => {
     const mockStore = configureStore([thunk]);
 
     const user = {id: "56789ibnm"};
+    const imageUrl = "http://123.png";
     const store = mockStore({
         registration: {
             cities: cities,
             singleChoiceAttributes: singleChoiceAttributes,
             isLoading: true,
             error: "Error",
-            user: user
+            user: user,
+            imageUrl: imageUrl
         }
     });
 
@@ -196,6 +198,7 @@ describe("Registration Container", () => {
         expect(connectedComponent.prop("isLoading")).toEqual(true);
         expect(connectedComponent.prop("error")).toEqual("Error");
         expect(connectedComponent.prop("user")).toEqual(user);
+        expect(connectedComponent.prop("imageUrl")).toEqual(imageUrl);
     });
 
 });

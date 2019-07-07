@@ -45,7 +45,7 @@ describe("Registration Actions", () => {
         };
 
         httpMock.onGet(
-            `${config.serverUrl}/en/single_choice_attributes.json`
+            `${config.serverUrl}/single_choice_attributes`
         ).reply(200, singleChoiceAttributes);
 
         // when
@@ -65,7 +65,7 @@ describe("Registration Actions", () => {
         };
 
         httpMock.onGet(
-            `${config.serverUrl}/en/single_choice_attributes.json`
+            `${config.serverUrl}/single_choice_attributes`
         ).reply(500, error);
 
         // when
@@ -95,7 +95,7 @@ describe("Registration Actions", () => {
         };
 
         httpMock.onGet(
-            `${config.serverUrl}/en/locations/cities.json`
+            `${config.serverUrl}/cities`
         ).reply(200, cities);
 
         // when
@@ -115,7 +115,7 @@ describe("Registration Actions", () => {
         };
 
         httpMock.onGet(
-            `${config.serverUrl}/en/locations/cities.json`
+            `${config.serverUrl}/cities`
         ).reply(500, error);
 
         // when
@@ -132,11 +132,16 @@ describe("Registration Actions", () => {
         const user = {
             realName: "John Smith",
             displayName: "John",
-            maritalStatus: "Unmarried"
+            maritalStatus: "Unmarried",
+            location: {
+                city: "Berlin",
+                lat: "58.3",
+                lon: "43.7"
+            }
         };
 
         httpMock.onPost(
-            `${config.serverUrl}/users`
+            `${config.serverUrl}/profiles`
         ).reply(201, user);
 
         // when
@@ -153,7 +158,12 @@ describe("Registration Actions", () => {
         const user = {
             realName: "John Smith",
             displayName: "John",
-            maritalStatus: "Unmarried"
+            maritalStatus: "Unmarried",
+            location: {
+                city: "Berlin",
+                lat: "58.3",
+                lon: "43.7"
+            }
         };
         const error = {
             "message": "error",
@@ -161,7 +171,7 @@ describe("Registration Actions", () => {
         };
 
         httpMock.onPost(
-            `${config.serverUrl}/users`
+            `${config.serverUrl}/profiles`
         ).reply(500, error);
 
         // when
@@ -199,7 +209,7 @@ describe("Registration Actions", () => {
         };
 
         httpMock.onGet(
-            `${config.serverUrl}/user/${userId}`
+            `${config.serverUrl}/profiles/${userId}`
         ).reply(200, user);
 
         // when
@@ -220,7 +230,7 @@ describe("Registration Actions", () => {
         };
 
         httpMock.onGet(
-            `${config.serverUrl}/user/${userId}`
+            `${config.serverUrl}/profiles/${userId}`
         ).reply(500, error);
 
         // when
@@ -281,5 +291,86 @@ describe("Registration Actions", () => {
         const expected = [{payload: "Request failed with status code 500", type: actions.ACTIONS.ERROR_OCCURRED}];
         expect(store.getActions()).toEqual(expect.arrayContaining(expected));
         expect(history.push).not.toHaveBeenCalled();
+    });
+
+    it('should dispatch correct actions user is updated partially', async () => {
+        // given
+        const userId = "6789yuihjkbn";
+        const profile = {
+            id: userId,
+            realName: "John Smith"
+        };
+
+        httpMock.onPatch(
+            `${config.serverUrl}/profiles/${userId}`
+        ).reply(200, profile);
+
+        // when
+        store.dispatch(actions.updateField(userId, "realName", "John Smith"));
+        await flushAllPromises();
+
+        // then
+        const expected = [{payload: profile, type: actions.ACTIONS.PROFILE_FETCHED}];
+        expect(store.getActions()).toEqual(expect.arrayContaining(expected));
+    });
+
+    it('should dispatch correct actions when error occurred while updating user', async () => {
+        // given
+        const userId = "6789yuihjkbn";
+        const error = {
+            "message": "error",
+            "code": 500
+        };
+
+        httpMock.onPatch(
+            `${config.serverUrl}/profiles/${userId}`
+        ).reply(500, error);
+
+        // when
+        store.dispatch(actions.updateField(userId, "location", {city: "Berlin", lat: "58.3", lon: "43.7"}));
+        await flushAllPromises();
+
+        // then
+        const expected = [{payload: "Request failed with status code 500", type: actions.ACTIONS.ERROR_OCCURRED}];
+        expect(store.getActions()).toEqual(expect.arrayContaining(expected));
+    });
+
+    it('should dispatch correct actions user profile pic is uploaded', async () => {
+        // given
+        const file = "image file";
+
+        httpMock.onPost(
+            `${config.serverUrl}/images`
+        ).reply(201, "imageId");
+
+        // when
+        store.dispatch(actions.imageUpload(file));
+        await flushAllPromises();
+
+        // then
+        const expected = [{payload: undefined, type: actions.ACTIONS.IMAGE_UPLOADED}];
+        expect(store.getActions()).toEqual(expect.arrayContaining(expected));
+    });
+
+    it('should dispatch correct actions when error occurred while uploading profile pic', async () => {
+        // given
+        const file = "image file";
+        const error = {
+            "message": "error",
+            "code": 500
+        };
+
+        httpMock.onPost(
+            `${config.serverUrl}/images`
+        ).reply(500, error);
+
+        // when
+        store.dispatch(actions.imageUpload(file));
+        await flushAllPromises();
+
+        // then
+        const expected = [{payload: undefined, type: actions.ACTIONS.IMAGE_UPLOADED},
+            {payload: "Request failed with status code 500", type: actions.ACTIONS.ERROR_OCCURRED}];
+        expect(store.getActions()).toEqual(expect.arrayContaining(expected));
     });
 });

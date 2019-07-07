@@ -41,6 +41,7 @@ export class RegistrationForm extends React.Component {
 
     onSubmit = (values) => {
         values.location = this.state.location;
+        values.profilePic = this.props.imageUrl;
         this.props.registerUser(values);
     };
 
@@ -48,6 +49,10 @@ export class RegistrationForm extends React.Component {
         this.setState({
             location: selectedLocation && selectedLocation.value
         });
+    };
+
+    handleImageUpload = e => {
+        this.props.imageUpload(e.target.files[0]);
     };
 
     getSingleSelectionField = (formItemClass, fieldDisplayName, fieldName, values, isRequired) => <FormControl
@@ -114,6 +119,7 @@ export class RegistrationForm extends React.Component {
                         style={{display: 'none'}}
                         id="raised-button-file"
                         type="file"
+                        onChange={this.handleImageUpload}
                     />
                     <label htmlFor="raised-button-file">
                         <Button variant="contained" color="secondary" component="span">
@@ -133,7 +139,7 @@ export class RegistrationForm extends React.Component {
                         value={genderOptions.length > 1 && genderOptions[0].name}
                     >
                         {genderOptions.map(gender => <FormControlLabel key={gender.id}
-                                                                                                  value={gender.name}
+                                                                                                  value={gender.name.toUpperCase()}
                                                                                                   control={<Radio/>}
                                                                                                   label={gender.name.toUpperCase()}/>)}
                     </RadioGroup>

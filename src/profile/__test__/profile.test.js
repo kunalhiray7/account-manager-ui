@@ -14,6 +14,8 @@ import BusinessIcon from '@material-ui/icons/Business';
 import PersonPinIcon from '@material-ui/icons/PersonPin';
 import FigureIcon from '@material-ui/icons/ThreeSixty';
 import LocationIcon from '@material-ui/icons/LocationOn';
+import CategoryIcon from '@material-ui/icons/Category';
+import InfoIcon from '@material-ui/icons/Info';
 import {Profile} from '../profile';
 import Avatar from "@material-ui/core/Avatar";
 import Dialog from "@material-ui/core/Dialog";
@@ -22,6 +24,10 @@ describe("Profile", () => {
     let wrapper;
     const userId = "345678tyuioghjkbnm";
     const fetchUserProfile = jest.fn();
+    const fetchSingleChoiceAttributes = jest.fn();
+    const fetchCities = jest.fn();
+    const updateField = jest.fn();
+    const imageUpload = jest.fn();
 
     const user = {
         "id": userId,
@@ -38,6 +44,7 @@ describe("Profile", () => {
             "lat": "56°09'N",
             "lon": "10°13'E"
         },
+        "city": "Aarhus",
         "maritalStatus": "Divorced",
         "occupation": "Banker",
         "realName": "John Smith",
@@ -212,6 +219,10 @@ describe("Profile", () => {
                                    user={user}
                                    cities={cities}
                                    singleChoiceAttributes={singleChoiceAttributes}
+                                   fetchSingleChoiceAttributes={fetchSingleChoiceAttributes}
+                                   fetchCities={fetchCities}
+                                   updateField={updateField}
+                                   imageUpload={imageUpload}
         />);
     });
 
@@ -226,7 +237,11 @@ describe("Profile", () => {
         const wrapperWithoutUser = shallow(<Profile classes={{}} userId={userId} fetchUserProfile={fetchUserProfileMock}
                                                     user={undefined}
                                                     cities={cities}
-                                                    singleChoiceAttributes={singleChoiceAttributes}/>);
+                                                    singleChoiceAttributes={singleChoiceAttributes}
+                                                    fetchSingleChoiceAttributes={fetchSingleChoiceAttributes}
+                                                    fetchCities={fetchCities}
+                                                    updateField={updateField}
+        />);
         expect(fetchUserProfileMock).toHaveBeenCalledWith(userId);
     });
 
@@ -253,13 +268,21 @@ describe("Profile", () => {
         {fieldName: "ethnicity", iconType: PersonPinIcon, value: user.ethnicity, isEditable: true, label: "Ethnicity"},
         {fieldName: "figure", iconType: FigureIcon, value: user.figure, isEditable: true, label: "Figure"},
         {fieldName: "city", iconType: LocationIcon, value: user.location.city, isEditable: true, label: "City"},
+        {fieldName: "religion", iconType: CategoryIcon, value: user.religion, isEditable: true, label: "Religion"},
     ];
 
     fields.forEach(field => {
-        it(`should render "${field.label}"`, function () {
+        it(`should render "${field.label}" in edit mode`, function () {
+            enableEditMode();
             assertField(field.fieldName, field.iconType, field.value, field.isEditable, field.label);
         });
     });
+
+    function enableEditMode() {
+        const editButton = wrapper.find("#editProfileButton");
+        editButton.simulate("click", {preventDefault: jest.fn()});
+        wrapper.update();
+    }
 
     function assertField(field, iconType, value, isEditable, labelValue) {
         const icon = wrapper.find(`#${field}Icon`);
@@ -280,6 +303,7 @@ describe("Profile", () => {
     }
 
     it("should render the dialog onClick of edit", function () {
+        enableEditMode();
         const realNameEdit = wrapper.find("#realNameEdit");
 
         expect(realNameEdit.type()).toEqual(EditIcon);
@@ -292,6 +316,7 @@ describe("Profile", () => {
     });
 
     it("should call updateField when a text field is updated", function () {
+        enableEditMode();
         const realNameEdit = wrapper.find("#realNameEdit");
         realNameEdit.simulate("click");
         const textField = wrapper.find("#realName");
@@ -303,6 +328,7 @@ describe("Profile", () => {
     });
 
     it("should call updateField when a text area field is updated", function () {
+        enableEditMode();
         const aboutMeEdit = wrapper.find("#aboutMeEdit");
         aboutMeEdit.simulate("click");
         const textAreaField = wrapper.find("#aboutMe");
@@ -314,6 +340,7 @@ describe("Profile", () => {
     });
 
     it("should call updateField when a radio field is updated", function () {
+        enableEditMode();
         const genderEdit = wrapper.find("#genderEdit");
         genderEdit.simulate("click");
         const radioField = wrapper.find("#genderRadio");
@@ -325,6 +352,7 @@ describe("Profile", () => {
     });
 
     it("should call updateField when a single value select field is updated", function () {
+        enableEditMode();
         const maritalStatusEdit = wrapper.find("#maritalStatusEdit");
         maritalStatusEdit.simulate("click");
         const selectField = wrapper.find("#maritalStatusSelect");
@@ -336,6 +364,7 @@ describe("Profile", () => {
     });
 
     it("should call updateField when a auto complete field is updated", function () {
+        enableEditMode();
         const cityEdit = wrapper.find("#cityEdit");
         cityEdit.simulate("click");
         const selectField = wrapper.find("#locationSelect");
@@ -344,6 +373,59 @@ describe("Profile", () => {
 
         expect(wrapper.state("updatedField")).toEqual("city");
         expect(wrapper.state("updatedValue")).toEqual("Berlin");
+    });
+
+    it("should fetch cities and single choice attributes when component is loaded", function () {
+        expect(fetchSingleChoiceAttributes).toHaveBeenCalled();
+        expect(fetchCities).toHaveBeenCalled();
+    });
+
+    it("should update the profile picture when new image is uploaded", function () {
+        wrapper.setProps({
+            imageUrl: "newUrl"
+        });
+        wrapper.update();
+
+        expect(updateField).toHaveBeenCalledWith(userId, "profilePic", "newUrl");
+    });
+
+    it("should upload the image when clicked on edit icon for profile pic", function () {
+        enableEditMode();
+        const files = ["file data"];
+        const profilePicEdit = wrapper.find("#raised-button-file");
+
+        profilePicEdit.simulate("change", {target: {files: files}});
+        wrapper.update();
+
+        expect(imageUpload).toHaveBeenCalledWith("file data");
+    });
+
+    it("should update the field", function () {
+        enableEditMode();
+        const realNameEdit = wrapper.find("#realNameEdit");
+
+        expect(realNameEdit.type()).toEqual(EditIcon);
+        realNameEdit.simulate("click");
+        wrapper.update();
+
+        const field = wrapper.find("#realName");
+        field.simulate("change", {target: {value: "New Name"}});
+
+        const updateButton = wrapper.find("#dialogUpdateButton");
+        updateButton.simulate("click");
+
+        expect(updateField).toHaveBeenCalledWith(userId, "realName", "New Name");
+    });
+
+    it("should render the information icon for realName, marital status and occupation", function () {
+        enableEditMode();
+        const realNameInfo = wrapper.find("#realNameInfo");
+        const maritalStatusInfo = wrapper.find("#maritalStatusInfo");
+        const occupationInfo = wrapper.find("#occupationInfo");
+
+        expect(realNameInfo.type()).toEqual(InfoIcon);
+        expect(maritalStatusInfo.type()).toEqual(InfoIcon);
+        expect(occupationInfo.type()).toEqual(InfoIcon);
     });
 
 });

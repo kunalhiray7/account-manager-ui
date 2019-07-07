@@ -10,6 +10,7 @@ const mapStateToProps = (state, ownParams) => {
         userId: ownParams.match.params.userId,
         singleChoiceAttributes: state.registration.singleChoiceAttributes,
         cities: state.registration.cities,
+        imageUrl: state.registration.imageUrl,
     }
 };
 const mapDispatchToProps = dispatch => bindActionCreators(actions, dispatch);

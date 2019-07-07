@@ -5,7 +5,8 @@ export const DEFAULT_STATE = {
     cities: {},
     isLoading: false,
     error: undefined,
-    user: undefined
+    user: undefined,
+    imageUrl: undefined,
 };
 
 const registrationReducer = (state = DEFAULT_STATE, action) => {
@@ -39,6 +40,11 @@ const registrationReducer = (state = DEFAULT_STATE, action) => {
             return {
                 ...state,
                 user: action.payload
+            };
+        case ACTIONS.IMAGE_UPLOADED:
+            return {
+                ...state,
+                imageUrl: action.payload
             };
 
         default:

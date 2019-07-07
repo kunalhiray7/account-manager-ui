@@ -14,6 +14,8 @@ import BusinessIcon from '@material-ui/icons/Business';
 import PersonPinIcon from '@material-ui/icons/PersonPin';
 import FigureIcon from '@material-ui/icons/ThreeSixty';
 import LocationIcon from '@material-ui/icons/LocationOn';
+import CategoryIcon from '@material-ui/icons/Category';
+import InfoIcon from '@material-ui/icons/Info';
 import Dialog from "@material-ui/core/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent";
@@ -30,6 +32,8 @@ import InputLabel from "@material-ui/core/InputLabel";
 import Select from "@material-ui/core/Select";
 import Input from "@material-ui/core/Input";
 import MenuItem from "@material-ui/core/MenuItem";
+import {pathOr} from "ramda";
+import Tooltip from "@material-ui/core/Tooltip";
 
 import AppBanner from "../common/appBar";
 import withRoot from "../common/withRoot";
@@ -45,12 +49,17 @@ export class Profile extends React.Component {
     state = {
         isEditModalOpen: false,
         updatedField: undefined,
-        updatedValue: undefined
+        updatedValue: undefined,
+        editMode: false,
     };
 
     modalChildComponent = undefined;
 
+    hiddenFieldText = "This field is not displayed in your profile. We ask this information to find a better match for you so that you can enjoy your coffee. :-)";
+
     componentDidMount() {
+        this.props.fetchSingleChoiceAttributes();
+        this.props.fetchCities();
         if (!this.props.user) {
             this.props.fetchUserProfile(this.props.userId);
         }
@@ -58,23 +67,64 @@ export class Profile extends React.Component {
 
     componentDidUpdate(prevProps, prevState, snapshot) {
         this.fields = this.getProfileFieldsWithMetadata(this.props);
+        if(prevProps.imageUrl !== this.props.imageUrl) {
+            this.props.updateField(this.props.userId, "profilePic", this.props.imageUrl);
+        }
     }
 
     getProfileFieldsWithMetadata = props => {
-        const cities = props.cities.cities.map(city => ({value: city, label: city.city}));
+        const {singleChoiceAttributes} = props;
+        const citiesFromProps = pathOr([], ["cities", "cities"], props);
+        const cities = citiesFromProps.map(city => ({value: city, label: city.city}));
+        const genderOptions = pathOr([], ["gender"], singleChoiceAttributes);
+        const ethnicityOptions = pathOr([], ["ethnicity"], singleChoiceAttributes);
+        const religionOptions = pathOr([], ["religion"], singleChoiceAttributes);
+        const figureOptions = pathOr([], ["figure"], singleChoiceAttributes);
+        const maritalStatusOptions = pathOr([], ["marital_status"], singleChoiceAttributes);
         return {
             realName: {label: "Full Name", type: "textField", subType: undefined, isRequired: true},
             displayName: {label: "Display Name", type: "textField", subType: undefined, isRequired: true},
-            gender: {label: "Gender", type: "radio", subType: undefined, isRequired: true, options: props.singleChoiceAttributes.gender},
+            gender: {label: "Gender", type: "radio", subType: undefined, isRequired: true, options: genderOptions},
             dateOfBirth: {label: "Date of Birth", type: "textField", subType: "date", isRequired: true},
             height: {label: "Height in Centimeters", type: "textField", subType: "number", isRequired: false},
-            maritalStatus: {label: "Marital Status", type: "select", subType: undefined, isRequired: false, options: props.singleChoiceAttributes.marital_status},
+            maritalStatus: {
+                label: "Marital Status",
+                type: "select",
+                subType: undefined,
+                isRequired: false,
+                options: maritalStatusOptions
+            },
             aboutMe: {label: "About Me", type: "textField", subType: undefined, multiline: true, isRequired: false},
-            occupation: {label: "Occupation", type: "textField", subType: undefined, multiline: true, isRequired: false},
-            ethnicity: {label: "Ethnicity", type: "select", subType: undefined, isRequired: false, options: props.singleChoiceAttributes.ethnicity},
-            figure: {label: "Figure", type: "select", subType: undefined, isRequired: false, options: props.singleChoiceAttributes.figure},
+            occupation: {
+                label: "Occupation",
+                type: "textField",
+                subType: undefined,
+                multiline: true,
+                isRequired: false
+            },
+            ethnicity: {
+                label: "Ethnicity",
+                type: "select",
+                subType: undefined,
+                isRequired: false,
+                options: ethnicityOptions
+            },
+            figure: {label: "Figure", type: "select", subType: undefined, isRequired: false, options: figureOptions},
+            religion: {
+                label: "Religion",
+                type: "select",
+                subType: undefined,
+                isRequired: false,
+                options: religionOptions
+            },
             city: {label: "City", type: "autoComplete", subType: undefined, isRequired: true, options: cities},
         }
+    };
+
+    enableEditMode = () => {
+        this.setState(prevState => ({
+            editMode: !prevState.editMode
+        }));
     };
 
     openEditModal = () => {
@@ -109,7 +159,8 @@ export class Profile extends React.Component {
 
     getAutoCompleteField = (cities) => <div>
         <FormLabel component="legend">Location</FormLabel>
-        <AutoCompleteField id="locationSelect" name="location" options={cities} onChange={(value) => this.onAutoCompleteFieldChange(value, "city")}/>
+        <AutoCompleteField id="locationSelect" name="location" options={cities}
+                           onChange={(value) => this.onAutoCompleteFieldChange(value, "city")}/>
     </div>;
 
     onFieldChange = (event, fieldName) => {
@@ -120,11 +171,19 @@ export class Profile extends React.Component {
     };
 
     onAutoCompleteFieldChange = (value, fieldName) => {
-        console.log(value);
         this.setState({
             updatedValue: value,
             updatedField: fieldName
         });
+    };
+
+    updateField = () => {
+        this.props.updateField(this.props.userId, this.state.updatedField, this.state.updatedValue);
+        this.closeEditModal();
+    };
+
+    handleImageUpload = e => {
+        this.props.imageUpload(e.target.files[0]);
     };
 
     getTextField = (fieldName, fieldDisplayName, type, isRequired, isMultiline, inputLabelProps) =>
@@ -175,49 +234,73 @@ export class Profile extends React.Component {
         </Select>
     </FormControl>;
 
-    renderField = (label, value, fieldName, onEdit) => <div className={this.props.classes.singleRowField}>
-        <div className={this.props.classes.labelAndIcon}>
-            {icons[fieldName]}
-            <Typography id={`${fieldName}Label`}>{label}</Typography>
-        </div>
-        <div className={this.props.classes.value}>
-            <Typography id={`${fieldName}Value`} variant="h8">{value}</Typography>
-            {onEdit &&
-            <EditIcon id={`${fieldName}Edit`} onClick={() => onEdit(fieldName)} className={this.props.classes.edit}/>}
-        </div>
-    </div>;
+    renderField = (label, value, fieldName, onEdit, displayOnPlatform) => (displayOnPlatform || this.state.editMode) &&
+        <div className={this.props.classes.singleRowField}>
+            <div className={this.props.classes.labelAndIcon}>
+                {icons[fieldName]}
+                <Typography id={`${fieldName}Label`}>{label}</Typography>
+            </div>
+            <div className={this.props.classes.value}>
+                <Typography id={`${fieldName}Value`} variant="h8">{value}</Typography>
+                {onEdit && this.state.editMode &&
+                <EditIcon id={`${fieldName}Edit`} onClick={() => onEdit(fieldName)}
+                          className={this.props.classes.edit}/>}
+                {!displayOnPlatform && this.state.editMode &&
+                <Tooltip title={this.hiddenFieldText}><InfoIcon id={`${fieldName}Info`}
+                                                                className={this.props.classes.info}/></Tooltip>}
+            </div>
+        </div>;
 
     render() {
         const {classes, user} = this.props;
         return <React.Fragment>
             <AppBanner id="appBanner" showLogout={true}/>
+            <span className={classes.editButton}>
+            <Button id="editProfileButton" onClick={this.enableEditMode} color="secondary">
+                Edit Profile
+            </Button></span>
             {user &&
             <Grid container spacing={3}>
                 <div className={classes.profileImageContainer}>
                     <Paper className={classes.paper}>
                         <Avatar id="profilePic" alt={user.realName} src={user.profilePic}
                                 className={classes.bigAvatar}/>
+                        {this.state.editMode &&
+                        <div className={classes.profilePicEdit}>
+                            <input
+                                accept="image/*"
+                                className={classes.input}
+                                style={{display: 'none'}}
+                                id="raised-button-file"
+                                type="file"
+                                onChange={this.handleImageUpload}
+                            />
+                            <label htmlFor="raised-button-file">
+                                <EditIcon id="profilePicEdit" className={this.props.classes.edit}/>
+                            </label>
+                        </div>}
                     </Paper>
                 </div>
                 <div className={classes.basicInfoSection}>
                     <Paper className={classes.paper}>
-                        <Typography variant="h6">Basic Info</Typography>
-                        {this.renderField("Full Name", user.realName, "realName", this.onEdit)}
-                        {this.renderField("Display Name", user.displayName, "displayName", this.onEdit)}
-                        {this.renderField("Gender", user.gender, "gender", this.onEdit)}
-                        {this.renderField("Date of Birth", user.dateOfBirth, "dateOfBirth", this.onEdit)}
-                        {this.renderField("Height in Centimeters", user.height, "height")}
-                        {this.renderField("Marital Status", user.maritalStatus, "maritalStatus", this.onEdit)}
+                        <Typography variant="h6">Basic Information</Typography>
+                        {this.renderField("Full Name", user.realName, "realName", this.onEdit, false)}
+                        {this.renderField("Display Name", user.displayName, "displayName", this.onEdit, true)}
+                        {this.renderField("Gender", user.gender, "gender", this.onEdit, true)}
+                        {this.renderField("Date of Birth", user.dateOfBirth, "dateOfBirth", this.onEdit, true)}
+                        {this.renderField("Height in Centimeters", user.height, "height", undefined, true)}
+                        {this.renderField("Marital Status", user.maritalStatus, "maritalStatus", this.onEdit, false)}
                     </Paper>
                 </div>
                 <div className={classes.socialInfoSection}>
                     <Paper className={classes.paper}>
-                        <Typography variant="h6">Social Info</Typography>
-                        {this.renderField("About Me", user.aboutMe, "aboutMe", this.onEdit)}
-                        {this.renderField("Occupation", user.occupation, "occupation", this.onEdit)}
-                        {this.renderField("Ethnicity", user.ethnicity, "ethnicity", this.onEdit)}
-                        {this.renderField("Figure", user.figure, "figure", this.onEdit)}
-                        {this.renderField("City", user.location.city, "city", this.onEdit)}
+                        <Typography variant="h6">Social Information</Typography>
+                        {this.renderField("About Me", user.aboutMe, "aboutMe", this.onEdit, true)}
+                        {this.renderField("Occupation", user.occupation, "occupation", this.onEdit, false)}
+                        {this.renderField("Ethnicity", user.ethnicity, "ethnicity", this.onEdit, true)}
+                        {this.renderField("Religion", user.religion, "religion", this.onEdit, true)}
+                        {this.renderField("Figure", user.figure, "figure", this.onEdit, true)}
+                        {this.renderField("City", user.city, "city", this.onEdit, true)}
                     </Paper>
                 </div>
             </Grid>}
@@ -237,7 +320,7 @@ export class Profile extends React.Component {
                     <Button onClick={this.closeEditModal} color="secondary">
                         Cancel
                     </Button>
-                    <Button onClick={this.closeEditModal} color="primary">
+                    <Button id="dialogUpdateButton" onClick={this.updateField} color="primary">
                         Update
                     </Button>
                 </DialogActions>
@@ -258,6 +341,7 @@ const icons = {
     ethnicity: <PersonPinIcon id="ethnicityIcon" style={{fontSize: "26px", margin: "0 10px"}}/>,
     figure: <FigureIcon id="figureIcon" style={{fontSize: "26px", margin: "0 10px"}}/>,
     city: <LocationIcon id="cityIcon" style={{fontSize: "26px", margin: "0 10px"}}/>,
+    religion: <CategoryIcon id="religionIcon" style={{fontSize: "26px", margin: "0 10px"}}/>,
 };
 
 const styles = theme => ({
@@ -314,12 +398,30 @@ const styles = theme => ({
         color: theme.palette.secondary.dark,
         justifyContent: "flex-start",
     },
+    info: {
+        fontSize: "26px",
+        margin: "0 10px",
+        color: theme.palette.primary.dark,
+        justifyContent: "flex-start",
+    },
     formItem: {
         marginLeft: theme.spacing.unit,
         marginRight: theme.spacing.unit,
         marginBottom: theme.spacing.unit * 4,
         width: '90%',
-    }
+    },
+    editButton: {
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "flex-end",
+        width: "95%",
+        marginTop: "10px",
+    },
+    profilePicEdit: {
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "flex-end",
+    },
 });
 
 export default withRoot(withStyles(styles)(Profile));

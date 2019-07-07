@@ -11,6 +11,7 @@ const mapStateToProps = state => {
         isLoading: state.registration.isLoading,
         error: state.registration.error,
         user: state.registration.user,
+        imageUrl: state.registration.imageUrl,
     }
 };
 const mapDispatchToProps = dispatch => bindActionCreators(actions, dispatch);

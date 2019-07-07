@@ -37,3 +37,13 @@ export const put = ({ path, payload, headers } = {}) => {
             return Promise.reject(error);
         });
 };
+
+export const patch = ({path, payload, headers} = {}) => {
+    return http.patch(path, payload)
+        .then(response => {
+            return Promise.resolve(response.data)
+        })
+        .catch(error => {
+            return Promise.reject(error);
+        });
+};

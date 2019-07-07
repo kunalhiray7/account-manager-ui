@@ -15,6 +15,7 @@ describe("Registration Form", () => {
     const fetchSingleChoiceAttributes = jest.fn();
     const fetchCities = jest.fn();
     const registerUser = jest.fn();
+    const imageUpload = jest.fn();
     const history = {push: jest.fn()};
 
     const attr = {
@@ -190,6 +191,7 @@ describe("Registration Form", () => {
                                             cities={cities}
                                             registerUser={registerUser}
                                             history={history}
+                                            imageUpload={imageUpload}
         />);
     });
 
@@ -426,5 +428,15 @@ describe("Registration Form", () => {
         wrapper.update();
 
         expect(history.push).toHaveBeenCalledWith(`/profile/${newUser.id}`);
+    });
+
+    it("should upload the image when clicked on edit icon for profile pic", function () {
+        const files = ["file data"];
+        const profilePicEdit = wrapper.find("#raised-button-file");
+
+        profilePicEdit.simulate("change", {target: {files: files}});
+        wrapper.update();
+
+        expect(imageUpload).toHaveBeenCalledWith("file data");
     });
 });

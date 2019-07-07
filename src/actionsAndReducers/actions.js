@@ -1,4 +1,4 @@
-import {get, post, put} from "../api/http";
+import {get, patch, post, put} from "../api/http";
 
 export const ACTIONS = {
     SINGLE_CHOICE_ATTR_FETCHED: 'SINGLE_CHOICE_ATTR_FETCHED',
@@ -7,6 +7,7 @@ export const ACTIONS = {
     ERROR_OCCURRED: 'ERROR_OCCURRED',
     USER_SAVED: 'USER_SAVED',
     PROFILE_FETCHED: 'PROFILE_FETCHED',
+    IMAGE_UPLOADED: 'IMAGE_UPLOADED',
 };
 
 function loading(isLoading) {
@@ -35,7 +36,7 @@ export function fetchSingleChoiceAttributes() {
         dispatch(loading(true));
 
         get({
-            path: `/en/single_choice_attributes.json`
+            path: `/single_choice_attributes`
         }).then(response => {
             dispatch(singleChoiceAttrFetched(response));
             dispatch(loading(false));
@@ -58,7 +59,7 @@ export function fetchCities() {
         dispatch(loading(true));
 
         get({
-            path: `/en/locations/cities.json`
+            path: `/cities`
         }).then(response => {
             dispatch(citiesFetched(response));
             dispatch(loading(false));
@@ -79,8 +80,8 @@ function userRegistered(user) {
 export function registerUser(userRequest) {
     return dispatch => {
         post({
-            path: `/users`,
-            payload: userRequest
+            path: `/profiles`,
+            payload: getProfileRequest(userRequest)
         }).then(response => {
             dispatch(userRegistered(response));
             dispatch(loading(false));
@@ -89,6 +90,13 @@ export function registerUser(userRequest) {
             dispatch(errorOccurred(error.message));
         });
     }
+}
+
+function getProfileRequest(userRequest) {
+    const {location, ...profileRequest} = userRequest;
+    profileRequest.city = location.city;
+    profileRequest.location = [parseFloat(location.lat), parseFloat(location.lon)];
+    return profileRequest;
 }
 
 function profileFetched(profile) {
@@ -103,7 +111,7 @@ export function fetchUserProfile(userId) {
         dispatch(loading(true));
 
         get({
-            path: `/user/${userId}`
+            path: `/profiles/${userId}`
         }).then(response => {
             dispatch(profileFetched(response));
             dispatch(loading(false));
@@ -130,3 +138,67 @@ export function authenticate(username, history) {
     }
 }
 
+function imageUploaded(url) {
+    return {
+        type: ACTIONS.IMAGE_UPLOADED,
+        payload: url
+    }
+}
+
+export function imageUpload(file) {
+    return dispatch => {
+
+        const formData = new FormData();
+        formData.append('file', file);
+        post({path: `/images`, payload: formData})
+            .then((response) => {
+                dispatch(imageUploaded(response.headers.location));
+                dispatch(loading(false));
+            })
+            .catch((error) => {
+                dispatch(imageUploaded(undefined));
+                dispatch(loading(false));
+                dispatch(errorOccurred(error.message));
+            })
+    }
+}
+
+export function updateField(id, field, value) {
+    const pathRequest = getPatchRequest(field, value);
+    return dispatch => {
+        patch({path: `/profiles/${id}`, payload: pathRequest})
+            .then(response => {
+                dispatch(profileFetched(response));
+                dispatch(loading(false));
+            })
+            .catch(error => {
+                dispatch(errorOccurred(error.message));
+                dispatch(loading(false));
+            })
+    }
+}
+
+function getPatchRequest(field, value) {
+    if(field === "location") {
+        return [
+            {
+                "op": "replace",
+                "path": "/location",
+                "value": [parseFloat(value.lat), parseFloat(value.lon)]
+            },
+            {
+                "op": "replace",
+                "path": "/city",
+                "value": `${value.city}`
+            }
+        ]
+    } else {
+        return [
+            {
+                "op": "replace",
+                "path": `/${field}`,
+                "value": `${value}`
+            }
+        ]
+    }
+}
