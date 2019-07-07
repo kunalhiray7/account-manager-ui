@@ -428,4 +428,16 @@ describe("Profile", () => {
         expect(occupationInfo.type()).toEqual(InfoIcon);
     });
 
+    it("should render the snackbar when error occurred", function () {
+        wrapper.setProps({
+            error: "Some error"
+        });
+        wrapper.update();
+
+        const snackbar = wrapper.find("#snackbar");
+
+        expect(snackbar.exists()).toBe(true);
+        expect(snackbar.prop("message")).toEqual(<span id="message-id">Some error</span>);
+    });
+
 });

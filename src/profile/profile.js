@@ -34,6 +34,7 @@ import Input from "@material-ui/core/Input";
 import MenuItem from "@material-ui/core/MenuItem";
 import {pathOr} from "ramda";
 import Tooltip from "@material-ui/core/Tooltip";
+import Snackbar from "@material-ui/core/Snackbar";
 
 import AppBanner from "../common/appBar";
 import withRoot from "../common/withRoot";
@@ -325,6 +326,16 @@ export class Profile extends React.Component {
                     </Button>
                 </DialogActions>
             </Dialog>
+            <Snackbar
+                id="snackbar"
+                anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                open={!!this.props.error}
+                onClose={() => {}}
+                ContentProps={{
+                    'aria-describedby': 'message-id',
+                }}
+                message={<span id="message-id">{this.props.error}</span>}
+            />
         </React.Fragment>
     }
 }

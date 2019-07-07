@@ -11,6 +11,7 @@ const mapStateToProps = (state, ownParams) => {
         singleChoiceAttributes: state.registration.singleChoiceAttributes,
         cities: state.registration.cities,
         imageUrl: state.registration.imageUrl,
+        error: state.registration.error,
     }
 };
 const mapDispatchToProps = dispatch => bindActionCreators(actions, dispatch);

@@ -9,6 +9,7 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Avatar from '@material-ui/core/Avatar';
 import {Link} from "react-router-dom";
 import {paths} from "../common/constants";
+import Snackbar from "@material-ui/core/Snackbar";
 
 export class Login extends React.Component {
 
@@ -71,6 +72,16 @@ export class Login extends React.Component {
                         </Button>
                     </Link>
                 </div>
+                <Snackbar
+                    id="snackbar"
+                    anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                    open={!!this.props.error}
+                    onClose={() => {}}
+                    ContentProps={{
+                        'aria-describedby': 'message-id',
+                    }}
+                    message={<span id="message-id">{this.props.error}</span>}
+                />
             </div>
         );
     }

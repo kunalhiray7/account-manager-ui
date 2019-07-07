@@ -6,7 +6,7 @@ import Login from './login';
 
 const mapStateToProps = state => {
     return {
-
+        error: state.registration.error,
     }
 };
 const mapDispatchToProps = dispatch => bindActionCreators(actions, dispatch);

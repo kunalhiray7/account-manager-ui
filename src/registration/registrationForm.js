@@ -4,9 +4,7 @@ import {withStyles} from "@material-ui/core";
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import MaterialUIForm from 'material-ui-form'
-
-import withRoot from "../common/withRoot";
-import AppBanner from "../common/appBar";
+import Snackbar from "@material-ui/core/Snackbar";
 import FormControl from "@material-ui/core/FormControl";
 import FormLabel from "@material-ui/core/FormLabel";
 import RadioGroup from "@material-ui/core/RadioGroup";
@@ -19,6 +17,8 @@ import MenuItem from "@material-ui/core/MenuItem";
 import {pathOr} from "ramda";
 
 import AutoCompleteField from "../common/autocompleteFormField";
+import withRoot from "../common/withRoot";
+import AppBanner from "../common/appBar";
 
 export class RegistrationForm extends React.Component {
 
@@ -170,6 +170,16 @@ export class RegistrationForm extends React.Component {
                 </div>
 
             </MaterialUIForm>
+            <Snackbar
+                id="snackbar"
+                anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                open={!!this.props.error}
+                onClose={() => {}}
+                ContentProps={{
+                    'aria-describedby': 'message-id',
+                }}
+                message={<span id="message-id">{this.props.error}</span>}
+            />
         </div>
     }
 }
