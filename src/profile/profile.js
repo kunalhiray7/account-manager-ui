@@ -228,7 +228,7 @@ export class Profile extends React.Component {
         </Select>
     </FormControl>;
 
-    renderField = (label, value, fieldName, onEdit) =>
+    renderField = (label, value, fieldName, onEdit, isPrivate) =>
         <div className={this.props.classes.singleRowField}>
             <div className={this.props.classes.labelAndIcon}>
                 {icons[fieldName]}
@@ -240,8 +240,8 @@ export class Profile extends React.Component {
                 <EditIcon id={`${fieldName}Edit`} onClick={() => onEdit(fieldName)}
                           className={this.props.classes.edit}/>}
 
-                <Tooltip title={this.hiddenFieldText}><InfoIcon id={`${fieldName}Info`}
-                                                                className={this.props.classes.info}/></Tooltip>
+                {isPrivate && <Tooltip title={this.hiddenFieldText}><InfoIcon id={`${fieldName}Info`}
+                                                                className={this.props.classes.info}/></Tooltip>}
             </div>
         </div>;
 
@@ -273,19 +273,19 @@ export class Profile extends React.Component {
                 <div className={classes.basicInfoSection}>
                     <Paper className={classes.paper}>
                         <Typography variant="h6">Basic Information</Typography>
-                        {this.renderField("Full Name", user.realName, "realName", this.onEdit)}
+                        {this.renderField("Full Name", user.realName, "realName", this.onEdit, true)}
                         {this.renderField("Display Name", user.displayName, "displayName", this.onEdit)}
                         {this.renderField("Gender", user.gender, "gender", this.onEdit)}
                         {this.renderField("Date of Birth", user.dateOfBirth, "dateOfBirth", this.onEdit)}
                         {this.renderField("Height in Centimeters", user.height, "height", undefined)}
-                        {this.renderField("Marital Status", user.maritalStatus, "maritalStatus", this.onEdit)}
+                        {this.renderField("Marital Status", user.maritalStatus, "maritalStatus", this.onEdit, true)}
                     </Paper>
                 </div>
                 <div className={classes.socialInfoSection}>
                     <Paper className={classes.paper}>
                         <Typography variant="h6">Social Information</Typography>
                         {this.renderField("About Me", user.aboutMe, "aboutMe", this.onEdit)}
-                        {this.renderField("Occupation", user.occupation, "occupation", this.onEdit)}
+                        {this.renderField("Occupation", user.occupation, "occupation", this.onEdit, true)}
                         {this.renderField("Ethnicity", user.ethnicity, "ethnicity", this.onEdit)}
                         {this.renderField("Religion", user.religion, "religion", this.onEdit)}
                         {this.renderField("Figure", user.figure, "figure", this.onEdit)}

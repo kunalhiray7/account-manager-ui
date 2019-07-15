@@ -256,7 +256,7 @@ describe("Profile", () => {
         expect(profilePic.prop("src")).toEqual(user.profilePic);
     });
 
-    const fields = [
+    const expectedFieldsConfig = [
         {fieldName: "realName", iconType: PersonIcon, value: user.realName, isEditable: true, label: "Full Name"},
         {fieldName: "displayName", iconType: TagFaceIcon, value: user.displayName, isEditable: true, label: "Display Name"},
         {fieldName: "gender", iconType: WcIcon, value: user.gender, isEditable: true, label: "Gender"},
@@ -271,7 +271,7 @@ describe("Profile", () => {
         {fieldName: "religion", iconType: CategoryIcon, value: user.religion, isEditable: true, label: "Religion"},
     ];
 
-    fields.forEach(field => {
+    expectedFieldsConfig.forEach(field => {
         it(`should render "${field.label}" in edit mode`, function () {
             assertField(field.fieldName, field.iconType, field.value, field.isEditable, field.label);
         });
@@ -410,6 +410,12 @@ describe("Profile", () => {
         expect(realNameInfo.type()).toEqual(InfoIcon);
         expect(maritalStatusInfo.type()).toEqual(InfoIcon);
         expect(occupationInfo.type()).toEqual(InfoIcon);
+    });
+
+    it("should not render the information button for public fields", function () {
+        const displayNameInfo = wrapper.find("#displayNameInfo");
+
+        expect(displayNameInfo.exists()).toBe(false);
     });
 
     it("should render the snackbar when error occurred", function () {
