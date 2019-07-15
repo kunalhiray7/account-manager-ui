@@ -458,6 +458,21 @@ describe("Profile", () => {
         expect(welcomeMessage.exists()).toBe(false);
     });
 
+    it.skip("should not be able to edit data if the user is not same as logged in user", function () {
+        const unAuthorizedUserId = "abcd124";
+        const loggedInUser = {
+            id: "abcd123"
+        };
+        wrapper.setProps({
+            user: loggedInUser,
+            userId: unAuthorizedUserId
+        });
+        wrapper.update();
+
+        const message = wrapper.find("#notAuthorized");
+        expect(message.childAt(0).text()).toEqual("You are not authorized to view this page.");
+    });
+
     function switchToPublicMode() {
         wrapper.setProps({
             user: user,
