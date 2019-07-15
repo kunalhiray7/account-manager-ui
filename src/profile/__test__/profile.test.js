@@ -431,15 +431,39 @@ describe("Profile", () => {
     });
 
     it("should not render the editIcons in public mode", function () {
-        wrapper.setProps({
-            publicMode: true
-        });
-        wrapper.update();
+        switchToPublicMode();
+
         const realNameEditIcon = wrapper.find("#realNameEdit");
 
         expect(realNameEditIcon.exists()).toBe(false);
     });
 
+    it("should not render the private fields in public mode", function () {
+        switchToPublicMode();
 
+        const realNameEditLabel = wrapper.find("#realNameLabel");
+        expect(realNameEditLabel.exists()).toBe(false);
+    });
+
+    it("should have welcome message on public profile", function () {
+        switchToPublicMode();
+
+        const welcomeMessage = wrapper.find("#welcomeMessage");
+        expect(welcomeMessage.childAt(0).text()).toEqual(`Welcome to ${user.displayName}'s public profile`);
+    });
+
+    it("should not have welcome message on edit profile", function () {
+
+        const welcomeMessage = wrapper.find("#welcomeMessage");
+        expect(welcomeMessage.exists()).toBe(false);
+    });
+
+    function switchToPublicMode() {
+        wrapper.setProps({
+            user: user,
+            publicMode: true
+        });
+        wrapper.update();
+    }
 
 });

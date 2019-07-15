@@ -228,71 +228,79 @@ export class Profile extends React.Component {
         </Select>
     </FormControl>;
 
-    renderField = (label, value, fieldName, onEdit, isPrivate) =>
-        <div className={this.props.classes.singleRowField}>
-            <div className={this.props.classes.labelAndIcon}>
-                {icons[fieldName]}
-                <Typography id={`${fieldName}Label`}>{label}</Typography>
-            </div>
-            <div className={this.props.classes.value}>
-                <Typography id={`${fieldName}Value`} variant="h8">{value}</Typography>
-                {onEdit && !this.props.publicMode &&
-                <EditIcon id={`${fieldName}Edit`} onClick={() => onEdit(fieldName)}
-                          className={this.props.classes.edit}/>}
+    renderField = (label, value, fieldName, onEdit, isPrivate) => {
+        if (this.props.publicMode && isPrivate) {
+            return undefined;
+        } else {
+            return <div className={this.props.classes.singleRowField}>
+                <div className={this.props.classes.labelAndIcon}>
+                    {icons[fieldName]}
+                    <Typography id={`${fieldName}Label`}>{label}</Typography>
+                </div>
+                <div className={this.props.classes.value}>
+                    <Typography id={`${fieldName}Value`} variant="h8">{value}</Typography>
+                    {onEdit && !this.props.publicMode &&
+                    <EditIcon id={`${fieldName}Edit`} onClick={() => onEdit(fieldName)}
+                              className={this.props.classes.edit}/>}
 
-                {isPrivate && <Tooltip title={this.hiddenFieldText}><InfoIcon id={`${fieldName}Info`}
-                                                                className={this.props.classes.info}/></Tooltip>}
-            </div>
-        </div>;
+                    {isPrivate && <Tooltip title={this.hiddenFieldText}><InfoIcon id={`${fieldName}Info`}
+                                                                                  className={this.props.classes.info}/></Tooltip>}
+                </div>
+            </div>;
+        }
+    };
 
     render() {
         const {classes, user} = this.props;
+        let welcomeMessage = user && `Welcome to ${user.displayName}'s public profile`;
         return <React.Fragment>
             <AppBanner id="appBanner" showLogout={true}/>
-            {user &&
-            <Grid container spacing={3}>
-                <div className={classes.profileImageContainer}>
-                    <Paper className={classes.paper}>
-                        <Avatar id="profilePic" alt={user.realName} src={user.profilePic}
-                                className={classes.bigAvatar}/>
-                        <div className={classes.profilePicEdit}>
-                            <input
-                                accept="image/*"
-                                className={classes.input}
-                                style={{display: 'none'}}
-                                id="raised-button-file"
-                                type="file"
-                                onChange={this.handleImageUpload}
-                            />
-                            <label htmlFor="raised-button-file">
-                                <EditIcon id="profilePicEdit" className={this.props.classes.edit}/>
-                            </label>
-                        </div>
-                    </Paper>
-                </div>
-                <div className={classes.basicInfoSection}>
-                    <Paper className={classes.paper}>
-                        <Typography variant="h6">Basic Information</Typography>
-                        {this.renderField("Full Name", user.realName, "realName", this.onEdit, true)}
-                        {this.renderField("Display Name", user.displayName, "displayName", this.onEdit)}
-                        {this.renderField("Gender", user.gender, "gender", this.onEdit)}
-                        {this.renderField("Date of Birth", user.dateOfBirth, "dateOfBirth", this.onEdit)}
-                        {this.renderField("Height in Centimeters", user.height, "height", undefined)}
-                        {this.renderField("Marital Status", user.maritalStatus, "maritalStatus", this.onEdit, true)}
-                    </Paper>
-                </div>
-                <div className={classes.socialInfoSection}>
-                    <Paper className={classes.paper}>
-                        <Typography variant="h6">Social Information</Typography>
-                        {this.renderField("About Me", user.aboutMe, "aboutMe", this.onEdit)}
-                        {this.renderField("Occupation", user.occupation, "occupation", this.onEdit, true)}
-                        {this.renderField("Ethnicity", user.ethnicity, "ethnicity", this.onEdit)}
-                        {this.renderField("Religion", user.religion, "religion", this.onEdit)}
-                        {this.renderField("Figure", user.figure, "figure", this.onEdit)}
-                        {this.renderField("City", user.city, "city", this.onEdit)}
-                    </Paper>
-                </div>
-            </Grid>}
+
+            {user && ( <React.Fragment>
+                {this.props.publicMode && <Typography id="welcomeMessage" variant="h4">{welcomeMessage}</Typography>}
+                <Grid container spacing={3}>
+                    <div className={classes.profileImageContainer}>
+                        <Paper className={classes.paper}>
+                            <Avatar id="profilePic" alt={user.realName} src={user.profilePic}
+                                    className={classes.bigAvatar}/>
+                            <div className={classes.profilePicEdit}>
+                                <input
+                                    accept="image/*"
+                                    className={classes.input}
+                                    style={{display: 'none'}}
+                                    id="raised-button-file"
+                                    type="file"
+                                    onChange={this.handleImageUpload}
+                                />
+                                <label htmlFor="raised-button-file">
+                                    <EditIcon id="profilePicEdit" className={this.props.classes.edit}/>
+                                </label>
+                            </div>
+                        </Paper>
+                    </div>
+                    <div className={classes.basicInfoSection}>
+                        <Paper className={classes.paper}>
+                            <Typography variant="h6">Basic Information</Typography>
+                            {this.renderField("Full Name", user.realName, "realName", this.onEdit, true)}
+                            {this.renderField("Display Name", user.displayName, "displayName", this.onEdit)}
+                            {this.renderField("Gender", user.gender, "gender", this.onEdit)}
+                            {this.renderField("Date of Birth", user.dateOfBirth, "dateOfBirth", this.onEdit)}
+                            {this.renderField("Height in Centimeters", user.height, "height", undefined)}
+                            {this.renderField("Marital Status", user.maritalStatus, "maritalStatus", this.onEdit, true)}
+                        </Paper>
+                    </div>
+                    <div className={classes.socialInfoSection}>
+                        <Paper className={classes.paper}>
+                            <Typography variant="h6">Social Information</Typography>
+                            {this.renderField("About Me", user.aboutMe, "aboutMe", this.onEdit)}
+                            {this.renderField("Occupation", user.occupation, "occupation", this.onEdit, true)}
+                            {this.renderField("Ethnicity", user.ethnicity, "ethnicity", this.onEdit)}
+                            {this.renderField("Religion", user.religion, "religion", this.onEdit)}
+                            {this.renderField("Figure", user.figure, "figure", this.onEdit)}
+                            {this.renderField("City", user.city, "city", this.onEdit)}
+                        </Paper>
+                    </div>
+                </Grid> </React.Fragment>)}
             <Dialog id="dialog" open={this.state.isEditModalOpen} onClose={this.closeEditModal}
                     aria-labelledby="form-dialog-title"
                     fullWidth="md"
