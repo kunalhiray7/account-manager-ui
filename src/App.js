@@ -7,6 +7,7 @@ import {paths} from "./common/constants";
 import ProfileContainer from "./profile/profileContainer";
 import LoginContainer from "./login/loginContainer";
 import RegistrationContainer from "./registration/registrationContainer";
+import PublicProfileContainer from "./profile/publicProfileContainer";
 
 const store = configureStore();
 
@@ -19,6 +20,7 @@ class App extends Component {
                         <Route exact path={paths.LOGIN} component={LoginContainer}/>
                         <Route exact path={paths.EDIT_PROFILE} component={ProfileContainer}/>
                         <Route exact path={paths.REGISTRATION} component={RegistrationContainer}/>
+                        <Route exact path={paths.PUBLIC_PROFILE} component={PublicProfileContainer}/>
                     </Switch>
                 </BrowserRouter>
             </Provider>

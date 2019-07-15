@@ -430,4 +430,16 @@ describe("Profile", () => {
         expect(snackbar.prop("message")).toEqual(<span id="message-id">Some error</span>);
     });
 
+    it("should not render the editIcons in public mode", function () {
+        wrapper.setProps({
+            publicMode: true
+        });
+        wrapper.update();
+        const realNameEditIcon = wrapper.find("#realNameEdit");
+
+        expect(realNameEditIcon.exists()).toBe(false);
+    });
+
+
+
 });

@@ -236,7 +236,7 @@ export class Profile extends React.Component {
             </div>
             <div className={this.props.classes.value}>
                 <Typography id={`${fieldName}Value`} variant="h8">{value}</Typography>
-                {onEdit &&
+                {onEdit && !this.props.publicMode &&
                 <EditIcon id={`${fieldName}Edit`} onClick={() => onEdit(fieldName)}
                           className={this.props.classes.edit}/>}
 
