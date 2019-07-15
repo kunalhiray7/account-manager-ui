@@ -1,5 +1,5 @@
 export const paths = {
     LOGIN: "/",
     REGISTRATION: "/register",
-    PROFILE: "/profile/:userId"
+    EDIT_PROFILE: "/profile/:userId/edit"
 };

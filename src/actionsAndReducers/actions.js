@@ -1,4 +1,5 @@
 import {get, patch, post, put} from "../api/http";
+import {paths} from "../common/constants";
 
 export const ACTIONS = {
     SINGLE_CHOICE_ATTR_FETCHED: 'SINGLE_CHOICE_ATTR_FETCHED',
@@ -129,7 +130,7 @@ export function authenticate(username, history) {
             payload: {username: username}
         }).then(response => {
             dispatch(profileFetched(response));
-            history.push(`/profile/${response.id}`);
+            history.push(paths.EDIT_PROFILE.replace(":userId", response.id));
             dispatch(loading(false));
         }, (error) => {
             dispatch(loading(false));

@@ -3,6 +3,7 @@ import configureMockStore from 'redux-mock-store';
 import MockAdapter from 'axios-mock-adapter';
 import {config, http} from '../../api/http';
 import * as actions from '../actions';
+import {paths} from '../../common/constants';
 
 describe("Registration Actions", () => {
     let mockStore, store, httpMock;
@@ -265,7 +266,7 @@ describe("Registration Actions", () => {
         // then
         const expected = [{payload: profile, type: actions.ACTIONS.PROFILE_FETCHED}];
         expect(store.getActions()).toEqual(expect.arrayContaining(expected));
-        expect(history.push).toHaveBeenCalledWith(`/profile/${id}`)
+        expect(history.push).toHaveBeenCalledWith(paths.EDIT_PROFILE.replace(":userId", profile.id));
     });
 
     it('should dispatch correct actions when error occurred while authenticating user', async () => {

@@ -17,7 +17,7 @@ class App extends Component {
                 <BrowserRouter>
                     <Switch>
                         <Route exact path={paths.LOGIN} component={LoginContainer}/>
-                        <Route exact path={paths.PROFILE} component={ProfileContainer}/>
+                        <Route exact path={paths.EDIT_PROFILE} component={ProfileContainer}/>
                         <Route exact path={paths.REGISTRATION} component={RegistrationContainer}/>
                     </Switch>
                 </BrowserRouter>
