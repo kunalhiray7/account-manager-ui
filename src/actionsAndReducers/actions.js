@@ -203,3 +203,9 @@ function getPatchRequest(field, value) {
         ]
     }
 }
+
+export function navigateToPublicProfile(userId, history) {
+    return dispatch => {
+        history.push(paths.PUBLIC_PROFILE.replace(":userId", userId));
+    };
+}

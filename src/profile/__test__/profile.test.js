@@ -28,6 +28,8 @@ describe("Profile", () => {
     const fetchCities = jest.fn();
     const updateField = jest.fn();
     const imageUpload = jest.fn();
+    const navigateToPublicProfile = jest.fn();
+    const history = {dummy: "dummy"};
 
     const user = {
         "id": userId,
@@ -223,6 +225,8 @@ describe("Profile", () => {
                                    fetchCities={fetchCities}
                                    updateField={updateField}
                                    imageUpload={imageUpload}
+                                   navigateToPublicProfile={navigateToPublicProfile}
+                                   history={history}
         />);
     });
 
@@ -471,6 +475,23 @@ describe("Profile", () => {
 
         const message = wrapper.find("#notAuthorized");
         expect(message.childAt(0).text()).toEqual("You are not authorized to view this page.");
+    });
+
+    it("should render a button to view public profile", function () {
+        const button = wrapper.find("#publicProfileBtn");
+
+        button.simulate("click", {preventDefault: jest.fn()});
+        wrapper.update();
+
+        expect(navigateToPublicProfile).toHaveBeenCalledWith(userId, history);
+    });
+
+    it("should not render the public profile button when already on public profile", function () {
+        switchToPublicMode();
+
+        const button = wrapper.find("#publicProfileBtn");
+
+        expect(button.exists()).toBe(false);
     });
 
     function switchToPublicMode() {

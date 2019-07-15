@@ -250,6 +250,10 @@ export class Profile extends React.Component {
         }
     };
 
+    onViewPublicProfile = () => {
+        this.props.navigateToPublicProfile(this.props.userId, this.props.history);
+    };
+
     render() {
         const {classes, user} = this.props;
         let welcomeMessage = user && `Welcome to ${user.displayName}'s public profile`;
@@ -257,6 +261,9 @@ export class Profile extends React.Component {
             <AppBanner id="appBanner" showLogout={true}/>
 
             {user && ( <React.Fragment>
+                {!this.props.publicMode && <span className={classes.publicProfileButton}>
+                    <Button id="publicProfileBtn" color="secondary" onClick={this.onViewPublicProfile}>View Public Profile</Button>
+                </span>}
                 {this.props.publicMode && <Typography id="welcomeMessage" variant="h4">{welcomeMessage}</Typography>}
                 <Grid container spacing={3}>
                     <div className={classes.profileImageContainer}>
@@ -421,6 +428,13 @@ const styles = theme => ({
         display: "flex",
         flexDirection: "row",
         justifyContent: "flex-end",
+    },
+    publicProfileButton: {
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "flex-end",
+        width: "95%",
+        marginTop: "10px",
     },
 });
 

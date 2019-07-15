@@ -374,4 +374,15 @@ describe("Registration Actions", () => {
             {payload: "Request failed with status code 500", type: actions.ACTIONS.ERROR_OCCURRED}];
         expect(store.getActions()).toEqual(expect.arrayContaining(expected));
     });
+
+    it("should navigate to public profile when navigateToPublicProfile is called", function () {
+        const userId = "45678tyuighjbn";
+        const history = {
+            push: jest.fn()
+        };
+
+        store.dispatch(actions.navigateToPublicProfile(userId, history));
+
+        expect(history.push).toHaveBeenCalledWith(paths.PUBLIC_PROFILE.replace(":userId", userId));
+    });
 });
