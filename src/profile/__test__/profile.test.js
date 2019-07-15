@@ -273,16 +273,9 @@ describe("Profile", () => {
 
     fields.forEach(field => {
         it(`should render "${field.label}" in edit mode`, function () {
-            enableEditMode();
             assertField(field.fieldName, field.iconType, field.value, field.isEditable, field.label);
         });
     });
-
-    function enableEditMode() {
-        const editButton = wrapper.find("#editProfileButton");
-        editButton.simulate("click", {preventDefault: jest.fn()});
-        wrapper.update();
-    }
 
     function assertField(field, iconType, value, isEditable, labelValue) {
         const icon = wrapper.find(`#${field}Icon`);
@@ -303,7 +296,6 @@ describe("Profile", () => {
     }
 
     it("should render the dialog onClick of edit", function () {
-        enableEditMode();
         const realNameEdit = wrapper.find("#realNameEdit");
 
         expect(realNameEdit.type()).toEqual(EditIcon);
@@ -316,7 +308,6 @@ describe("Profile", () => {
     });
 
     it("should call updateField when a text field is updated", function () {
-        enableEditMode();
         const realNameEdit = wrapper.find("#realNameEdit");
         realNameEdit.simulate("click");
         const textField = wrapper.find("#realName");
@@ -328,7 +319,6 @@ describe("Profile", () => {
     });
 
     it("should call updateField when a text area field is updated", function () {
-        enableEditMode();
         const aboutMeEdit = wrapper.find("#aboutMeEdit");
         aboutMeEdit.simulate("click");
         const textAreaField = wrapper.find("#aboutMe");
@@ -340,7 +330,6 @@ describe("Profile", () => {
     });
 
     it("should call updateField when a radio field is updated", function () {
-        enableEditMode();
         const genderEdit = wrapper.find("#genderEdit");
         genderEdit.simulate("click");
         const radioField = wrapper.find("#genderRadio");
@@ -352,7 +341,6 @@ describe("Profile", () => {
     });
 
     it("should call updateField when a single value select field is updated", function () {
-        enableEditMode();
         const maritalStatusEdit = wrapper.find("#maritalStatusEdit");
         maritalStatusEdit.simulate("click");
         const selectField = wrapper.find("#maritalStatusSelect");
@@ -364,7 +352,6 @@ describe("Profile", () => {
     });
 
     it("should call updateField when a auto complete field is updated", function () {
-        enableEditMode();
         const cityEdit = wrapper.find("#cityEdit");
         cityEdit.simulate("click");
         const selectField = wrapper.find("#locationSelect");
@@ -390,7 +377,6 @@ describe("Profile", () => {
     });
 
     it("should upload the image when clicked on edit icon for profile pic", function () {
-        enableEditMode();
         const files = ["file data"];
         const profilePicEdit = wrapper.find("#raised-button-file");
 
@@ -401,7 +387,6 @@ describe("Profile", () => {
     });
 
     it("should update the field", function () {
-        enableEditMode();
         const realNameEdit = wrapper.find("#realNameEdit");
 
         expect(realNameEdit.type()).toEqual(EditIcon);
@@ -418,7 +403,6 @@ describe("Profile", () => {
     });
 
     it("should render the information icon for realName, marital status and occupation", function () {
-        enableEditMode();
         const realNameInfo = wrapper.find("#realNameInfo");
         const maritalStatusInfo = wrapper.find("#maritalStatusInfo");
         const occupationInfo = wrapper.find("#occupationInfo");

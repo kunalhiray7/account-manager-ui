@@ -51,7 +51,6 @@ export class Profile extends React.Component {
         isEditModalOpen: false,
         updatedField: undefined,
         updatedValue: undefined,
-        editMode: false,
     };
 
     modalChildComponent = undefined;
@@ -120,12 +119,6 @@ export class Profile extends React.Component {
             },
             city: {label: "City", type: "autoComplete", subType: undefined, isRequired: true, options: cities},
         }
-    };
-
-    enableEditMode = () => {
-        this.setState(prevState => ({
-            editMode: !prevState.editMode
-        }));
     };
 
     openEditModal = () => {
@@ -235,7 +228,7 @@ export class Profile extends React.Component {
         </Select>
     </FormControl>;
 
-    renderField = (label, value, fieldName, onEdit, displayOnPlatform) => (displayOnPlatform || this.state.editMode) &&
+    renderField = (label, value, fieldName, onEdit) =>
         <div className={this.props.classes.singleRowField}>
             <div className={this.props.classes.labelAndIcon}>
                 {icons[fieldName]}
@@ -243,12 +236,12 @@ export class Profile extends React.Component {
             </div>
             <div className={this.props.classes.value}>
                 <Typography id={`${fieldName}Value`} variant="h8">{value}</Typography>
-                {onEdit && this.state.editMode &&
+                {onEdit &&
                 <EditIcon id={`${fieldName}Edit`} onClick={() => onEdit(fieldName)}
                           className={this.props.classes.edit}/>}
-                {!displayOnPlatform && this.state.editMode &&
+
                 <Tooltip title={this.hiddenFieldText}><InfoIcon id={`${fieldName}Info`}
-                                                                className={this.props.classes.info}/></Tooltip>}
+                                                                className={this.props.classes.info}/></Tooltip>
             </div>
         </div>;
 
@@ -256,17 +249,12 @@ export class Profile extends React.Component {
         const {classes, user} = this.props;
         return <React.Fragment>
             <AppBanner id="appBanner" showLogout={true}/>
-            <span className={classes.editButton}>
-            <Button id="editProfileButton" onClick={this.enableEditMode} color="secondary">
-                Edit Profile
-            </Button></span>
             {user &&
             <Grid container spacing={3}>
                 <div className={classes.profileImageContainer}>
                     <Paper className={classes.paper}>
                         <Avatar id="profilePic" alt={user.realName} src={user.profilePic}
                                 className={classes.bigAvatar}/>
-                        {this.state.editMode &&
                         <div className={classes.profilePicEdit}>
                             <input
                                 accept="image/*"
@@ -279,29 +267,29 @@ export class Profile extends React.Component {
                             <label htmlFor="raised-button-file">
                                 <EditIcon id="profilePicEdit" className={this.props.classes.edit}/>
                             </label>
-                        </div>}
+                        </div>
                     </Paper>
                 </div>
                 <div className={classes.basicInfoSection}>
                     <Paper className={classes.paper}>
                         <Typography variant="h6">Basic Information</Typography>
-                        {this.renderField("Full Name", user.realName, "realName", this.onEdit, false)}
-                        {this.renderField("Display Name", user.displayName, "displayName", this.onEdit, true)}
-                        {this.renderField("Gender", user.gender, "gender", this.onEdit, true)}
-                        {this.renderField("Date of Birth", user.dateOfBirth, "dateOfBirth", this.onEdit, true)}
-                        {this.renderField("Height in Centimeters", user.height, "height", undefined, true)}
-                        {this.renderField("Marital Status", user.maritalStatus, "maritalStatus", this.onEdit, false)}
+                        {this.renderField("Full Name", user.realName, "realName", this.onEdit)}
+                        {this.renderField("Display Name", user.displayName, "displayName", this.onEdit)}
+                        {this.renderField("Gender", user.gender, "gender", this.onEdit)}
+                        {this.renderField("Date of Birth", user.dateOfBirth, "dateOfBirth", this.onEdit)}
+                        {this.renderField("Height in Centimeters", user.height, "height", undefined)}
+                        {this.renderField("Marital Status", user.maritalStatus, "maritalStatus", this.onEdit)}
                     </Paper>
                 </div>
                 <div className={classes.socialInfoSection}>
                     <Paper className={classes.paper}>
                         <Typography variant="h6">Social Information</Typography>
-                        {this.renderField("About Me", user.aboutMe, "aboutMe", this.onEdit, true)}
-                        {this.renderField("Occupation", user.occupation, "occupation", this.onEdit, false)}
-                        {this.renderField("Ethnicity", user.ethnicity, "ethnicity", this.onEdit, true)}
-                        {this.renderField("Religion", user.religion, "religion", this.onEdit, true)}
-                        {this.renderField("Figure", user.figure, "figure", this.onEdit, true)}
-                        {this.renderField("City", user.city, "city", this.onEdit, true)}
+                        {this.renderField("About Me", user.aboutMe, "aboutMe", this.onEdit)}
+                        {this.renderField("Occupation", user.occupation, "occupation", this.onEdit)}
+                        {this.renderField("Ethnicity", user.ethnicity, "ethnicity", this.onEdit)}
+                        {this.renderField("Religion", user.religion, "religion", this.onEdit)}
+                        {this.renderField("Figure", user.figure, "figure", this.onEdit)}
+                        {this.renderField("City", user.city, "city", this.onEdit)}
                     </Paper>
                 </div>
             </Grid>}
@@ -420,13 +408,6 @@ const styles = theme => ({
         marginRight: theme.spacing.unit,
         marginBottom: theme.spacing.unit * 4,
         width: '90%',
-    },
-    editButton: {
-        display: "flex",
-        flexDirection: "row",
-        justifyContent: "flex-end",
-        width: "95%",
-        marginTop: "10px",
     },
     profilePicEdit: {
         display: "flex",
